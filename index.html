@@ -59,7 +59,7 @@ select:focus-visible,.seg button:focus-visible,input:focus-visible{outline:2px s
 .ins h3{font-size:15.5px;line-height:1.5;font-weight:700}
 .ins p{margin:0;color:var(--muted);font-size:13px}
 .ins .act{margin-top:auto;padding-top:8px;border-top:1px solid var(--line);font-size:13px;color:var(--ink)}
-.ins .act::before{content:"次の一手　";color:var(--accent);font-weight:700}
+.ins .act::before{content:"次のアクション　";color:var(--accent);font-weight:700}
 
 /* kpis */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:12px}
@@ -125,7 +125,14 @@ td.r,th.r{text-align:right}
 .todo li:last-child{border-bottom:0}
 .todo input{margin-top:4px;accent-color:var(--accent);width:16px;height:16px;flex:none}
 .todo label{cursor:pointer}
-.todo li.done label{color:var(--faint);text-decoration:line-through}
+.todo li.done .tt{color:var(--faint);text-decoration:line-through}
+.todo .tt{display:block}
+.todo .after{display:block;margin-top:6px;font-size:12px;color:var(--muted);background:var(--asagi-soft);border-radius:8px;padding:6px 10px}
+.todo .after b{color:var(--asagi)}
+.prog{display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:130px}
+.prog .num{font-size:13px;font-weight:700}
+.pbar{width:130px;height:6px;border-radius:3px;background:var(--heat0);overflow:hidden}
+.pbar span{display:block;height:100%;background:var(--grad-a);transition:width .4s}
 .todo .why{display:block;font-size:12px;color:var(--muted)}
 /* live */
 .card.live{border:1.5px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--grad-d) border-box}
@@ -376,6 +383,74 @@ h1,h2,h3{word-break:auto-phrase}
   .zbtn .zt{display:none}
   .zbtn::before{width:14px;height:14px}
 }
+.mailbtn{position:relative;display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;flex:none}
+.mailbtn:hover{border-color:var(--g2)}
+.mailbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mbadge{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#E0484E;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.mbadge:empty{display:none}
+@media (max-width:600px){.mailbtn .mbl{display:none}.mailbtn{padding:8px 10px;min-height:38px}}
+/* mail */
+.demo-mail{margin:-4px 0 12px;font-size:12px;color:var(--faint)}
+.mail-grid{display:grid;grid-template-columns:minmax(260px,.9fr) 1.6fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:520px}
+.mlist{list-style:none;margin:0;padding:0;border-right:1px solid var(--line);overflow-y:auto;max-height:640px}
+.mlist li{border-bottom:1px solid var(--line)}
+.mitem{all:unset;box-sizing:border-box;display:grid;grid-template-columns:10px 1fr auto;gap:2px 10px;width:100%;padding:12px 14px;cursor:pointer}
+.mitem:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.mitem:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.mitem[aria-current="true"]{background:var(--accent-soft)}
+.mitem .ud{grid-row:1/4;width:8px;height:8px;border-radius:50%;margin-top:7px;background:transparent}
+.mitem.unread .ud{background:var(--g2)}
+.mitem .mf1{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mitem.unread .mf1{color:var(--ink);font-weight:700}
+.mitem .mt{font-size:11.5px;color:var(--faint);white-space:nowrap}
+.mitem .ms{grid-column:2/4;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mitem.unread .ms{font-weight:700}
+.mitem .mx{grid-column:2/4;display:flex;gap:6px;align-items:center;font-size:11.5px;color:var(--muted);min-width:0}
+.mitem .mx .sn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;flex:none}
+.st.new{background:var(--accent-soft);color:var(--accent-ink)}
+.st.open{background:rgba(242,190,92,.16);color:#F2BE5C}
+.st.replied{background:var(--good-soft);color:var(--good)}
+.mview{display:flex;flex-direction:column;min-width:0;max-height:640px}
+.mvhead{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.mvhead h3{font-size:17px;line-height:1.45}
+.mvfrom{font-size:13px;color:var(--muted)}
+.mvfrom b{color:var(--ink)}
+.route{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.route .rc{padding:2px 8px;border-radius:6px;background:var(--heat0);color:var(--ink)}
+.route .rc.l{background:var(--asagi-soft);color:var(--asagi)}
+.route .ra{color:var(--faint)}
+.back{display:none}
+.thread{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.bub{max-width:88%;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.bub.in{background:var(--heat0);align-self:flex-start;border-top-left-radius:4px}
+.bub.me{background:color-mix(in srgb,var(--g1) 26%,var(--surface));align-self:flex-end;border-top-right-radius:4px}
+.bub .bm{display:block;font-size:11px;color:var(--faint);margin-bottom:4px;white-space:normal}
+.composer{border-top:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.tpls{display:flex;flex-wrap:wrap;gap:6px}
+.tpl{font:inherit;font-size:12px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 11px;cursor:pointer}
+.tpl:hover{border-color:var(--g2)}
+.composer textarea{font:inherit;font-size:13.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:110px;resize:vertical;width:100%}
+.composer textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.crow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.crow .hint{font-size:11.5px;color:var(--faint)}
+.send{font:inherit;font-weight:700;font-size:13.5px;color:#111;background:var(--grad-d);border:0;border-radius:10px;padding:9px 20px;cursor:pointer}
+.send:disabled{opacity:.4;cursor:default}
+.send:focus-visible{outline:2px solid var(--g2);outline-offset:2px}
+.mempty{margin:auto;color:var(--faint);font-size:13px;padding:40px 20px;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--bg);font-size:13.5px;font-weight:500;padding:10px 18px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:calc(100% - 32px)}
+.toast[hidden]{display:none!important}
+@media (prefers-reduced-motion:no-preference){.toast:not([hidden]){animation:slidein .3s ease-out}}
+@media (max-width:760px){
+  .mail-grid{grid-template-columns:1fr;min-height:0}
+  .mlist{border-right:0;max-height:none}
+  .mview{display:none;max-height:none}
+  .mail-grid.showing .mlist{display:none}
+  .mail-grid.showing .mview{display:flex}
+  .back{display:inline-flex;align-self:flex-start;font:inherit;font-size:13px;color:var(--accent);background:none;border:0;padding:0 0 4px;cursor:pointer}
+  .thread{max-height:none}
+  .mail .head{flex-wrap:wrap}
+}
 footer{color:var(--faint);font-size:12px;text-align:center;padding-top:8px}
 
 @media (max-width:860px){
@@ -401,6 +476,7 @@ footer{color:var(--faint);font-size:12px;text-align:center;padding-top:8px}
       <span class="tag">数字を見るだけで終わらない、クリエイターのためのアクセス解析</span>
     </div>
     <div class="controls">
+      <button type="button" class="mailbtn" id="mailbtn" aria-label="お仕事メールを開く"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><span class="mbl">メール</span><span class="mbadge num" id="mailbadge"></span></button>
       <select id="persona" aria-label="デモのクリエイター">
         <option value="illust">カナスギ（ライター）</option>
         <option value="vtuber">星乃ルカ（VTuber）</option>
@@ -457,14 +533,15 @@ footer{color:var(--faint);font-size:12px;text-align:center;padding-top:8px}
     <button type="button" class="tab" role="tab" id="tab-live" data-tab="live" aria-selected="false"><span class="ldot"></span>いま<span class="tcount num" id="tabnow"></span></button>
     <button type="button" class="tab" role="tab" id="tab-flow" data-tab="flow" aria-selected="false">来た人の動き</button>
     <button type="button" class="tab" role="tab" id="tab-links" data-tab="links" aria-selected="false">リンク・時間帯</button>
+    <button type="button" class="tab" role="tab" id="tab-mail" data-tab="mail" aria-selected="false">お仕事メール<span class="tcount num" id="tabmail"></span></button>
   </nav>
 
   <div class="panel" data-panel="sum" role="tabpanel" aria-labelledby="tab-sum">
   <section class="kpis" id="kpis" aria-label="主要な数字"></section>
-    <div class="sect"><h2 class="st">気づき</h2><p class="sub">数字から読み取れることと、次の一手</p></div>
+    <div class="sect"><h2 class="st">気づき</h2><p class="sub">数字から読み取れることと、次のアクション</p></div>
   <section class="insights" id="insights" aria-label="今期の気づき"></section>
   <section class="card">
-      <div class="head"><div><h2>今週やること</h2><p class="sub">気づきから作ったチェックリスト。チェックはこのブラウザに残ります</p></div></div>
+      <div class="head"><div><h2>今週やること</h2><p class="sub">気づきから作ったチェックリスト。終えたらチェックすると、その日を起点に前後の数字を比べます</p></div><div class="prog"><span class="num" id="progt">0 / 0 完了</span><div class="pbar"><span id="progb"></span></div></div></div>
       <ul class="todo" id="todo"></ul>
   </section>
   </div>
@@ -536,6 +613,26 @@ footer{color:var(--faint);font-size:12px;text-align:center;padding-top:8px}
   </section>
   </div>
 
+  <div class="panel" data-panel="mail" role="tabpanel" aria-labelledby="tab-mail" hidden>
+  <section class="card mail">
+    <div class="head">
+      <div><h2>お仕事メール</h2><p class="sub">お仕事依頼フォームから届いたメールと返信。どの入口とリンクを通って届いたかも表示します</p></div>
+      <div class="seg mf" role="group" aria-label="絞り込み">
+        <button type="button" data-f="all" aria-pressed="true">すべて</button>
+        <button type="button" data-f="unread">未読</button>
+        <button type="button" data-f="todo">返信待ち</button>
+      </div>
+    </div>
+    <p class="demo-mail">デモ表示です。返信しても実際には送信されません。</p>
+    <div class="mail-grid" id="mailgrid">
+      <ul class="mlist" id="mlist"></ul>
+      <div class="mview" id="mview"></div>
+    </div>
+  </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
   <footer>Lit Insight 試作 v0.1 ・ デモデータ</footer>
 </div>
 
@@ -596,8 +693,8 @@ function build(key){
 }
 
 let state={persona:'illust',days:31,tab:'sum'};
-try{const s=JSON.parse(localStorage.getItem('litinsight-ui')||'{}');if(P[s.persona])state.persona=s.persona;if([1,7,31].includes(s.days))state.days=s.days;if(['sum','live','flow','links'].includes(s.tab))state.tab=s.tab}catch(e){}
-if(['sum','live','flow','links'].includes(location.hash.slice(1)))state.tab=location.hash.slice(1);
+try{const s=JSON.parse(localStorage.getItem('litinsight-ui')||'{}');if(P[s.persona])state.persona=s.persona;if([1,7,31].includes(s.days))state.days=s.days;if(['sum','live','flow','links','mail'].includes(s.tab))state.tab=s.tab}catch(e){}
+if(['sum','live','flow','links','mail'].includes(location.hash.slice(1)))state.tab=location.hash.slice(1);
 function saveUI(){try{localStorage.setItem('litinsight-ui',JSON.stringify(state))}catch(e){}}
 let done={}; try{done=JSON.parse(localStorage.getItem('litinsight-todo')||'{}')}catch(e){}
 
@@ -716,7 +813,17 @@ function render(anim){
   $('#insights').innerHTML=ins.slice(0,3).map(i=>`<article class="ins"><span class="chip ${i.type}">${i.chip}</span><h3>${i.h}</h3><p>${i.p}</p><div class="act">${i.a}</div></article>`).join('');
 
   // todo
-  $('#todo').innerHTML=ins.map((i,n)=>{const id=`${state.persona}-${n}-${i.a}`;const ck=!!done[id];return `<li class="${ck?'done':''}"><input type="checkbox" id="t${n}" data-id="${encodeURIComponent(id)}" ${ck?'checked':''}><label for="t${n}">${i.a}<span class="why">${i.chip}：${i.h}</span></label></li>`}).join('');
+  const TD=ins.map((i,n)=>({i,n,id:`${state.persona}-${n}-${i.a}`}));
+  const doneAt=id=>{const v=done[id];return v?(v===1?Date.now():v):0};
+  TD.sort((p1,p2)=>(!!doneAt(p1.id))-(!!doneAt(p2.id))||p1.n-p2.n);
+  const nd=TD.filter(t=>doneAt(t.id)).length;
+  $('#progt').textContent=`${nd} / ${TD.length} 完了`;$('#progb').style.width=(TD.length?nd/TD.length*100:0)+'%';
+  const dstr=t=>{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`};
+  $('#todo').innerHTML=TD.map(({i,n,id})=>{const at=doneAt(id),ck=!!at;
+    let after='';
+    if(ck){const due=new Date(at+7*864e5),left=Math.ceil((due-Date.now())/864e5);
+      after=`<span class="after"><b>完了 ${dstr(at)}</b>　${left>0?`あと${left}日（${due.getMonth()+1}/${due.getDate()}）で、実行前7日間と実行後7日間の数字を並べて表示します`:'実行前後の比較ができます'}</span>`}
+    return `<li class="${ck?'done':''}"><input type="checkbox" id="t${n}" data-id="${encodeURIComponent(id)}" ${ck?'checked':''}><label for="t${n}"><span class="tt">${i.a}</span><span class="why">${i.chip}：${i.h}</span>${after}</label></li>`}).join('');
 
   // chart points
   let pc,pp,labs;
@@ -739,6 +846,7 @@ function render(anim){
   document.querySelectorAll('.lge').forEach(e=>e.hidden=one);
   CH.nowIdx=one?hNow:null;CH.partial=!one;
   drawChart(pc,pp,labs,anim,one?'昨日の同じ時間':'前の期間の同じ位置');
+  renderMail();
   if(livePersona!==state.persona){livePersona=state.persona;startLive(c,days,srcNames,sC,L,FL,linkU,D.at(-1));}
 }
 
@@ -921,7 +1029,7 @@ $('#pause').addEventListener('click',()=>{LV.paused=!LV.paused;$('#pause').textC
 
 $('#persona').addEventListener('change',e=>{state.persona=e.target.value;saveUI();render(true)});
 document.querySelectorAll('.ptab').forEach(b=>b.addEventListener('click',()=>{state.days=+b.dataset.days;saveUI();render(true)}));
-$('#todo').addEventListener('change',e=>{if(e.target.type!=='checkbox')return;const id=decodeURIComponent(e.target.dataset.id);if(e.target.checked)done[id]=1;else delete done[id];e.target.closest('li').classList.toggle('done',e.target.checked);try{localStorage.setItem('litinsight-todo',JSON.stringify(done))}catch(err){}});
+$('#todo').addEventListener('change',e=>{if(e.target.type!=='checkbox')return;const id=decodeURIComponent(e.target.dataset.id);if(e.target.checked)done[id]=Date.now();else delete done[id];try{localStorage.setItem('litinsight-todo',JSON.stringify(done))}catch(err){}render(false)});
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>render(false),150)});
 function showTab(t,redraw){
   state.tab=t;saveUI();
@@ -930,7 +1038,88 @@ function showTab(t,redraw){
   if(redraw)render(true);
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab,true)));
+$('#mailbtn').addEventListener('click',()=>{showTab('mail',true);const t=$('.tabs');const y=t.getBoundingClientRect().top+window.scrollY-70;window.scrollTo({top:y,behavior:'smooth'})});
 $('.tabs').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;const t=[...document.querySelectorAll('.tab')];let i=t.findIndex(b=>b.dataset.tab===state.tab);i=(i+(e.key==='ArrowRight'?1:t.length-1))%t.length;t[i].focus();showTab(t[i].dataset.tab,true)});
+/* ---------- mail (demo) ---------- */
+const MAILSEED={
+  illust:[
+    {id:'w1',from:'佐藤 美穂',org:'アオバ出版 Web編集部',email:'sato@aoba-pub.example',subj:'Web連載のご相談（月2本・各4,000字程度）',route:['X','執筆実績・ポートフォリオ','お仕事依頼フォーム'],at:'今日 11:42',status:'new',thread:[{me:0,at:'今日 11:42',body:'カナスギ様\n\nはじめまして。アオバ出版Web編集部の佐藤と申します。\nXで拝見した記事がとても印象に残り、ご連絡しました。\n\n弊社メディアで「働き方と創作」をテーマにした連載を企画しており、月2本（各4,000字程度）でご執筆いただけないかと考えております。\n\n開始時期は11月を想定しています。原稿料などの条件は、改めてご相談させてください。\n\nご検討のほど、よろしくお願いいたします。'}]},
+    {id:'w2',from:'田中 翔',org:'合同会社ミナト 広報',email:'tanaka@minato.example',subj:'採用サイト用インタビュー記事の執筆依頼',route:['検索','寄稿・掲載記事一覧','お仕事依頼フォーム'],at:'昨日 18:05',status:'new',thread:[{me:0,at:'昨日 18:05',body:'カナスギ様\n\n合同会社ミナト広報の田中です。\n採用サイトのリニューアルにあたり、社員インタビュー記事（3本）の取材と執筆をお願いできる方を探しています。\n\n取材はオンラインで各60分、納品は12月上旬を予定しています。\nお見積もりをいただくことは可能でしょうか。'}]},
+    {id:'w3',from:'山本 恵',org:'個人',email:'megumi.y@example.com',subj:'noteの記事を拝見しました。講座での登壇のご相談',route:['note','お仕事依頼フォーム'],at:'9/25',status:'open',thread:[{me:0,at:'9/25 21:14',body:'カナスギ様\n\nnoteの「書く前に考えること」の記事を読んで、ぜひお話を伺いたいと思いました。\n地域の文章講座で、90分ほどお話しいただくことはできますか？\n謝礼は少額で恐縮ですが、3万円を予定しています。'},{me:1,at:'9/26 10:03',body:'山本様\n\nご連絡ありがとうございます。カナスギです。\n講座のお話、ありがたく拝見しました。\n開催日と会場（オンラインか対面か）を教えていただけますか？'},{me:0,at:'9/26 19:40',body:'ありがとうございます！\n11/16（日）の午後、市民会館で対面を予定しています。参加者は20名ほどです。'}]},
+    {id:'w4',from:'木村 亮',org:'ソラ企画',email:'kimura@sora-plan.example',subj:'書籍の構成協力について',route:['直接','お仕事依頼フォーム'],at:'9/22',status:'replied',thread:[{me:0,at:'9/22 14:30',body:'カナスギ様\n\nビジネス書の構成協力（全8章）をお願いできる方を探しています。\n一度お話しできませんでしょうか。'},{me:1,at:'9/22 17:12',body:'木村様\n\nお問い合わせありがとうございます。カナスギです。\n一度オンラインでお打ち合わせできればと思います。\n9/29（月）14時〜、9/30（火）10時〜のいずれかはいかがでしょうか。'}]}
+  ],
+  vtuber:[
+    {id:'v1',from:'石井 大地',org:'ネオン・ゲームス PR',email:'ishii@neon-games.example',subj:'新作ゲームのPR配信のご相談',route:['YouTube','お仕事依頼フォーム'],at:'今日 10:20',status:'new',thread:[{me:0,at:'今日 10:20',body:'星乃ルカ様\n\nネオン・ゲームスの石井です。\n11月発売の新作について、PR配信（2時間×1回）をお願いできないかご相談です。'}]},
+    {id:'v2',from:'森 さくら',org:'グッズ工房もり',email:'mori@goods-mori.example',subj:'アクリルスタンド制作のご提案',route:['X','グッズ通販','お仕事依頼フォーム'],at:'9/26',status:'open',thread:[{me:0,at:'9/26 13:00',body:'星乃ルカ様\n\n誕生日記念のアクリルスタンド制作をご提案させてください。\n最小ロット50個から対応できます。'}]},
+    {id:'v3',from:'高橋 蓮',org:'個人勢VTuber',email:'ren.t@example.com',subj:'コラボ配信のお誘い',route:['TikTok','お仕事依頼フォーム'],at:'9/21',status:'replied',thread:[{me:0,at:'9/21 22:10',body:'ルカさん、はじめまして！高橋蓮です。\nよければ歌枠コラボしませんか？'},{me:1,at:'9/22 12:00',body:'蓮さん、お誘いありがとうございます！ぜひ。日程を相談させてください。'}]}
+  ],
+  handmade:[
+    {id:'h1',from:'小林 綾',org:'セレクトショップ tonari',email:'kobayashi@tonari.example',subj:'店舗での委託販売のご相談',route:['Instagram','新作一覧','お仕事依頼フォーム'],at:'今日 09:15',status:'new',thread:[{me:0,at:'今日 09:15',body:'atelier koto様\n\n吉祥寺のセレクトショップtonariの小林です。\nピアスのシリーズを、店頭で委託販売させていただけないでしょうか。'}]},
+    {id:'h2',from:'松田 理子',org:'月刊てしごと 編集部',email:'matsuda@teshigoto.example',subj:'誌面掲載（冬の贈りもの特集）のお願い',route:['Pinterest','お仕事依頼フォーム'],at:'9/27',status:'new',thread:[{me:0,at:'9/27 16:40',body:'atelier koto様\n\n月刊てしごと編集部の松田です。\n12月号「冬の贈りもの」特集で、作品を1点ご紹介させていただけないでしょうか。'}]},
+    {id:'h3',from:'中川 由衣',org:'個人',email:'yui.n@example.com',subj:'結婚式用イヤリングのオーダー',route:['検索','お仕事依頼フォーム'],at:'9/23',status:'replied',thread:[{me:0,at:'9/23 20:00',body:'はじめまして。来年3月の結婚式で着けるイヤリングをオーダーできますか？'},{me:1,at:'9/24 09:30',body:'中川様\n\nおめでとうございます。オーダーを承っております。ドレスの色味を教えていただけますか？'}]}
+  ]};
+const ARRIVE={
+  illust:{id:'wn',from:'岡田 健',org:'ハルカゼ・マガジン',email:'okada@harukaze.example',subj:'特集記事（5,000字）の執筆依頼',route:['Instagram','お仕事依頼フォーム'],status:'new'},
+  vtuber:{id:'vn',from:'佐々木 ゆう',org:'イベント制作シグナル',email:'sasaki@signal.example',subj:'オンラインイベントへのご出演依頼',route:['X','お仕事依頼フォーム'],status:'new'},
+  handmade:{id:'hn',from:'藤井 花',org:'ギャラリー灯',email:'fujii@akari.example',subj:'冬の展示会へのご出展のお誘い',route:['Instagram','イベント出店情報','お仕事依頼フォーム'],status:'new'}};
+const TPL=[
+  ['お礼と確認',(n,me)=>`${n}様\n\nお問い合わせありがとうございます。${me}です。\nご依頼の内容を拝見しました。進めるにあたって、次の点を教えていただけますか。\n\n・納期\n・分量（文字数・本数など）\n・ご予算\n\nどうぞよろしくお願いいたします。`],
+  ['打ち合わせの日程',(n,me)=>`${n}様\n\nご連絡ありがとうございます。${me}です。\n一度オンラインでお打ち合わせできればと思います。次の日程はいかがでしょうか。\n\n・10/1（水）14時〜\n・10/2（木）10時〜\n\nご都合をお知らせください。`],
+  ['見積もりを送る',(n,me)=>`${n}様\n\n${me}です。ご依頼の内容で、お見積もりをお送りします。\n\n・料金：〇〇円（税別）\n・納期：〇月〇日\n・修正：2回まで\n\nご確認のほど、よろしくお願いいたします。`],
+  ['お断り',(n,me)=>`${n}様\n\nお声がけいただき、ありがとうございます。${me}です。\n大変恐縮ですが、現在スケジュールに余裕がなく、今回はお引き受けが難しい状況です。\nまたの機会がありましたら、ぜひよろしくお願いいたします。`]];
+const MS={};let mailFilter='all',mailSel={},mailStore={};
+try{mailStore=JSON.parse(localStorage.getItem('litinsight-mail')||'{}')}catch(e){}
+function saveMail(){try{const o={};for(const k in MS)o[k]=MS[k].map(m=>({id:m.id,status:m.status,read:m.read,mine:m.thread.filter(t=>t.added)}));localStorage.setItem('litinsight-mail',JSON.stringify({v:1,d:o,arr:mailStore.arr||{}}))}catch(e){}}
+function mailFor(p){
+  if(MS[p])return MS[p];
+  const saved=(mailStore.d||{})[p]||[];
+  const list=JSON.parse(JSON.stringify(MAILSEED[p]||[])).map(m=>({...m,read:m.status!=='new'}));
+  if(mailStore.arr&&mailStore.arr[p]){const a=mailStore.arr[p];list.unshift({...JSON.parse(JSON.stringify(ARRIVE[p])),at:a.at,read:false,thread:[{me:0,at:a.at,body:arrivalBody(p)}]})}
+  saved.forEach(sv=>{const m=list.find(x=>x.id===sv.id);if(!m)return;m.status=sv.status;m.read=sv.read;(sv.mine||[]).forEach(t=>m.thread.push(t))});
+  MS[p]=list;return list;
+}
+function arrivalBody(p){const a=ARRIVE[p],me=P[p].name;return `${me}様\n\n${a.org}の${a.from.split(' ')[0]}と申します。\nプロフィールを拝見し、ご相談したくご連絡しました。詳しい内容は、お打ち合わせでお伝えできればと思います。\n\nご検討のほど、よろしくお願いいたします。`}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STL={new:'新着',open:'対応中',replied:'返信済み'};
+function nowLabel(){const d=new Date();return `今日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
+function renderMail(){
+  const p=state.persona,list=mailFor(p);
+  const unread=list.filter(m=>!m.read).length;
+  $('#tabmail').textContent=unread||'';$('#mailbadge').textContent=unread||'';
+  document.querySelectorAll('.mf button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===mailFilter));
+  const shown=list.filter(m=>mailFilter==='all'||(mailFilter==='unread'&&!m.read)||(mailFilter==='todo'&&m.status!=='replied'));
+  $('#mlist').innerHTML=shown.length?shown.map(m=>{const last=m.thread[m.thread.length-1];return `<li><button type="button" class="mitem${m.read?'':' unread'}" data-id="${m.id}" aria-current="${mailSel[p]===m.id}"><span class="ud"></span><span class="mf1">${esc(m.org)}　${esc(m.from)}</span><span class="mt">${esc(m.at)}</span><span class="ms">${esc(m.subj)}</span><span class="mx"><span class="st ${m.status}">${STL[m.status]}</span><span class="sn">${esc((last.me?'あなた：':'')+last.body.replace(/\n+/g,' ').slice(0,60))}</span></span></button></li>`}).join(''):'<li class="mempty">該当するメールはありません</li>';
+  const m=list.find(x=>x.id===mailSel[p]);
+  if(!m){$('#mview').innerHTML='<p class="mempty">左の一覧からメールを選ぶと、ここに内容と返信欄が出ます</p>';$('#mailgrid').classList.remove('showing');return}
+  const surname=m.from.split(' ')[0];
+  $('#mview').innerHTML=`<div class="mvhead"><button type="button" class="back" id="mback">← 一覧に戻る</button><h3>${esc(m.subj)}</h3><div class="mvfrom"><b>${esc(m.from)}</b>（${esc(m.org)}）　${esc(m.email)}　<span class="st ${m.status}">${STL[m.status]}</span></div><div class="route"><span>届いた経路：</span>${m.route.map((r,i)=>`${i?'<span class="ra">→</span>':''}<span class="rc${i?' l':''}">${esc(r)}</span>`).join('')}</div></div>
+  <div class="thread" id="thread">${m.thread.map(t=>`<div class="bub ${t.me?'me':'in'}"><span class="bm">${t.me?'あなた':esc(surname)}・${esc(t.at)}</span>${esc(t.body)}</div>`).join('')}</div>
+  <div class="composer"><div class="tpls">${TPL.map((t,i)=>`<button type="button" class="tpl" data-t="${i}">${t[0]}</button>`).join('')}</div>
+  <label class="label" for="reply">${esc(surname)}様への返信</label><textarea id="reply" placeholder="ひな形を選ぶか、ここに返信を書きます"></textarea>
+  <div class="crow"><span class="hint">デモのため実際には送信されません</span><button type="button" class="send" id="sendbtn" disabled>返信する</button></div></div>`;
+  $('#mailgrid').classList.add('showing');
+  const th=$('#thread');th.scrollTop=th.scrollHeight;
+}
+function openMail(id){const p=state.persona,m=mailFor(p).find(x=>x.id===id);if(!m)return;mailSel[p]=id;if(!m.read){m.read=true;if(m.status==='new')m.status='open'}saveMail();renderMail();}
+function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3200)}
+$('#mlist').addEventListener('click',e=>{const b=e.target.closest('.mitem');if(b)openMail(b.dataset.id)});
+document.querySelectorAll('.mf button').forEach(b=>b.addEventListener('click',()=>{mailFilter=b.dataset.f;renderMail()}));
+$('#mview').addEventListener('click',e=>{
+  const p=state.persona,m=mailFor(p).find(x=>x.id===mailSel[p]);
+  if(e.target.id==='mback'){mailSel[p]=null;renderMail();return}
+  const tb=e.target.closest('.tpl');
+  if(tb&&m){const ta=$('#reply');ta.value=TPL[+tb.dataset.t][1](m.from.split(' ')[0],P[p].name);$('#sendbtn').disabled=false;ta.focus();return}
+  if(e.target.id==='sendbtn'&&m){const v=$('#reply').value.trim();if(!v)return;m.thread.push({me:1,at:nowLabel(),body:v,added:true});m.status='replied';m.read=true;saveMail();renderMail();toast(`${m.from.split(' ')[0]}様に返信しました（デモ）`)}
+});
+$('#mview').addEventListener('input',e=>{if(e.target.id==='reply')$('#sendbtn').disabled=!e.target.value.trim()});
+setTimeout(function arrive(){
+  const p=state.persona;mailStore.arr=mailStore.arr||{};
+  if(mailStore.arr[p]||!ARRIVE[p])return;
+  const at=nowLabel();mailStore.arr[p]={at};
+  const a=JSON.parse(JSON.stringify(ARRIVE[p]));mailFor(p).unshift({...a,at,read:false,thread:[{me:0,at,body:arrivalBody(p)}]});
+  saveMail();renderMail();toast(`新しいお仕事メールが届きました：${a.org}`);
+},40000);
+
 showTab(state.tab,false);
 render(true);
 })();
