@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08070B"><style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>Lit Insight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#08070B; --surface:#14121B; --ink:#EEEAF6; --muted:#A8A1BC; --faint:#7C7591; --line:#2A2638;
+  --accent:#B3A0F0; --accent-soft:#2A2344; --accent-ink:#D8CCFC;
+  --g1:#8E77E0; --g2:#BBA8F2; --g3:#EDC3EA;
+  --asagi:#5CC9D3; --asagi-soft:#10333A; --a1:#3BAFBB; --a2:#6DD0D8; --a3:#B4ECEF;
+  --good:#52C585; --good-soft:#132E1E; --warn:#EE8DB2; --warn-soft:#3A1B2A;
+  --prev:#5A5470; --heat0:#221F2C;
+  --grad:linear-gradient(90deg,var(--g1),var(--g2) 60%,var(--g3));
+  --grad-a:linear-gradient(90deg,var(--a1),var(--a2) 60%,var(--a3));
+  --grad-d:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
+  --mono:"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",sans-serif;
+  --sans:"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.65;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+body,.feed time,.heat .hl{font-variant-numeric:tabular-nums}
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand .mark{font-family:var(--mono);font-weight:600;font-size:18px;letter-spacing:.02em}
+.brand .mark b,.gt{background:var(--grad-d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tag{color:var(--muted);font-size:13px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select,.seg button{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+select:focus-visible,.seg button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;border-radius:0;padding:6px 12px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--grad-d);color:#fff}
+.demo{font-size:12.5px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:8px 12px}
+.demo strong{color:var(--ink)}
+.hello{display:flex;flex-direction:column;gap:2px}
+.hello h1{font-size:22px;font-weight:700}
+.hello p{margin:0;color:var(--muted)}
+.label{font-size:11.5px;letter-spacing:.08em;color:var(--muted);font-weight:500}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h2{font-size:15px;font-weight:700}
+.card .sub{color:var(--muted);font-size:12.5px;margin:2px 0 0}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+
+/* insights */
+.insights{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ins{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;width:fit-content;letter-spacing:.04em}
+.chip.chance{background:var(--accent-soft);color:var(--accent-ink)}
+.chip.move{background:var(--asagi-soft);color:var(--asagi)}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.ins h3{font-size:15.5px;line-height:1.5;font-weight:700}
+.ins p{margin:0;color:var(--muted);font-size:13px}
+.ins .act{margin-top:auto;padding-top:8px;border-top:1px solid var(--line);font-size:13px;color:var(--ink)}
+.ins .act::before{content:"次のアクション　";color:var(--accent);font-weight:700}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.kpi{padding:14px 18px;display:flex;flex-direction:column;gap:4px}
+.kpi+.kpi{border-left:1px solid var(--line)}
+.kpi .v{font-size:26px;font-weight:600;line-height:1.2}
+.kpi .d{font-size:12px}
+.up{color:var(--good)} .down{color:var(--warn)} .flat{color:var(--muted)}
+
+/* chart */
+.chartbox{position:relative;width:100%}
+#chart svg{display:block;width:100%;height:auto}
+.zbtn{display:inline-flex;align-items:center;gap:6px}
+.zbtn::before{content:"";width:12px;height:12px;border:1.5px solid currentColor;border-radius:2px;box-sizing:border-box;background:linear-gradient(currentColor,currentColor) 50%/6px 1.5px no-repeat,linear-gradient(currentColor,currentColor) 50%/1.5px 6px no-repeat}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px)}
+.zoom[hidden]{display:none!important}
+.zpanel{background:var(--surface);border:1px solid var(--line);border-radius:14px;width:min(1280px,100%);max-height:100%;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:10px}
+.zhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.zhead h2{font-size:18px}
+.zbtns{display:flex;gap:8px;flex:none}
+.zhint{margin:0;font-size:12.5px;color:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:0;border-top:2px solid var(--accent);vertical-align:middle;margin-right:5px}
+.legend i.p{border-top:2px dashed var(--prev)}
+.legend i.e{width:8px;height:8px;border:2px solid var(--accent);border-radius:50%;background:var(--surface)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:6px 9px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-100%);line-height:1.5}
+.tip[hidden]{display:none!important}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid2.wide{grid-template-columns:1.35fr 1fr}
+
+/* sources */
+.srclist{display:flex;flex-direction:column;gap:10px}
+.src{display:grid;grid-template-columns:96px 1fr 52px 64px;gap:10px;align-items:center;font-size:13px}
+.bar{height:10px;background:var(--heat0);border-radius:5px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--grad);border-radius:5px}
+.src .pct{text-align:right}
+.src .dl{text-align:right;font-size:12px}
+
+/* links table */
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+th{font-weight:500;color:var(--muted);font-size:11.5px;letter-spacing:.06em;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+.pos{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--heat0);font-family:var(--mono);font-size:12px}
+.mini{height:6px;background:var(--heat0);border-radius:3px;margin-top:5px;overflow:hidden;max-width:180px}
+.mini span{display:block;height:100%;background:var(--grad-a);opacity:.8}
+
+/* heatmap */
+.heat{display:grid;grid-template-columns:22px repeat(24,minmax(14px,1fr));gap:3px;min-width:420px}
+.heat .c{aspect-ratio:1;border-radius:3px;background:var(--heat0);position:relative}
+.heat .c.best{outline:2px solid var(--ink);outline-offset:-1px}
+.heat .rl{font-size:11px;color:var(--muted);display:flex;align-items:center}
+.heat .hl{font-size:10px;color:var(--faint);text-align:left;font-family:var(--mono);white-space:nowrap;overflow:visible}
+.heat .hl.end{text-align:right}
+.heatnote{margin-top:10px;font-size:13px}
+
+/* todo */
+.todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.todo li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.todo li:last-child{border-bottom:0}
+.todo input{margin-top:4px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.todo label{cursor:pointer}
+.todo li.done .tt{color:var(--faint);text-decoration:line-through}
+.todo .tt{display:block}
+.todo .after{display:block;margin-top:6px;font-size:12px;color:var(--muted);background:var(--asagi-soft);border-radius:8px;padding:6px 10px}
+.todo .after b{color:var(--asagi)}
+.prog{display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:130px}
+.prog .num{font-size:13px;font-weight:700}
+.pbar{width:130px;height:6px;border-radius:3px;background:var(--heat0);overflow:hidden}
+.pbar span{display:block;height:100%;background:var(--grad-a);transition:width .4s}
+.todo .why{display:block;font-size:12px;color:var(--muted)}
+/* live */
+.card.live{border:1.5px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--grad-d) border-box}
+.hello h1 .gt{font-weight:700}
+.live .lt{display:flex;gap:12px;align-items:flex-start}
+.livebadge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;color:#fff;background:#D93A3A;padding:3px 8px;border-radius:5px;margin-top:2px}
+.livebadge i{width:7px;height:7px;border-radius:50%;background:#fff}
+.livebadge.off{background:var(--faint)}
+.btn{font:inherit;font-size:12.5px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 12px;cursor:pointer}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.live-grid{display:grid;grid-template-columns:180px .85fr 1.35fr;gap:20px;align-items:stretch}
+.now{display:flex;flex-direction:column;gap:2px}
+.now .big{font-size:56px;font-weight:600;line-height:1.1;background:var(--grad-d);-webkit-background-clip:text;background-clip:text;color:transparent;width:fit-content}
+.today{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.today>div{display:flex;flex-direction:column}
+.today .label{white-space:nowrap;font-size:11px}
+.tv{font-size:20px;font-weight:600}
+#tc{color:var(--asagi)}
+.stream{display:flex;flex-direction:column;gap:6px;min-width:0}
+#stream svg{display:block;width:100%;height:auto}
+.feedbox{display:flex;flex-direction:column;gap:6px;min-width:0}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;height:230px;overflow:hidden;position:relative}
+.feed::after{content:"";position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(transparent,var(--surface))}
+.feed li{display:grid;grid-template-columns:52px 1fr;gap:8px;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.feed time{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.feed .s{font-weight:700}
+.feed li.click .s{color:var(--asagi)}
+.surge{display:flex;gap:10px;align-items:center;background:var(--warn-soft);color:var(--ink);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13.5px}
+.surge b{color:var(--warn)}
+.surge[hidden]{display:none!important}
+.bump{color:var(--accent)}
+tr.hit td{background:var(--asagi-soft)}
+@media (prefers-reduced-motion:no-preference){
+  .livebadge:not(.off) i{animation:blink 1.2s ease-in-out infinite}
+  .feed li.new{animation:slidein .45s ease-out}
+  .bump{animation:bump .5s ease-out}
+  .surge:not([hidden]){animation:slidein .4s ease-out}
+  tr td{transition:background .8s ease}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.1s ease-out forwards}
+  .fadein{opacity:0;animation:fade .8s .5s ease-out forwards}
+}
+@keyframes blink{50%{opacity:.25}}
+@keyframes slidein{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes bump{0%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+.bump{display:inline-block;transform-origin:left center}
+@media (max-width:860px){
+  .live-grid{grid-template-columns:1fr}
+  .now{flex-direction:row;flex-wrap:wrap;align-items:flex-end;gap:4px 16px}
+  .now .label:first-child{width:100%}
+  .today{margin-top:0;padding-top:0;border-top:0;flex:1;min-width:180px}
+  .feed{height:180px}
+}
+/* flow */
+.flow3{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:28px}
+.fcol{display:flex;flex-direction:column;gap:6px;min-width:0}
+.bignum{display:flex;align-items:baseline;gap:8px}
+.bignum .num{font-size:30px;font-weight:600;line-height:1.2}
+.bignum .sub{margin:0}
+.hist{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;align-items:end;height:130px}
+.hcol{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;height:100%;gap:3px;text-align:center}
+.hcol .b{background:linear-gradient(0deg,var(--g1),var(--g2) 70%,var(--g3));opacity:.85;border-radius:3px 3px 0 0;min-height:2px}
+.hcol.q .b{background:var(--warn);opacity:.75}
+.hcol .hv{font-size:11px}
+.hcol .hx{font-size:10.5px;color:var(--muted);white-space:nowrap}
+.note{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.frow{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}
+.frow .ft{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.frow.sub1 .ft span:first-child{padding-left:14px}
+.fbar{height:12px;background:var(--heat0);border-radius:4px;overflow:hidden}
+.fbar span{display:block;height:100%;background:var(--grad)}
+.frow.t .fbar span{background:var(--grad-a)}
+.frow.w .fbar span{background:var(--warn);opacity:.8}
+.drow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(40px,1fr) 42px 62px;gap:8px;align-items:center;font-size:12.5px;margin-bottom:8px}
+.fbar.a span{background:var(--grad-a)}
+.drow .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drow .rt{font-size:11.5px;color:var(--muted);text-align:right}
+.drow .p{text-align:right}
+.srcflow{margin-top:18px;border-top:1px solid var(--line);padding-top:10px}
+td.bad{color:var(--warn);font-weight:600}
+/* live sessions */
+.feed li.sess{display:flex;flex-direction:column;gap:1px;grid-template-columns:none}
+.sess .l1{display:flex;gap:8px;align-items:baseline}
+.sess .l1 .dw{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.sess.on .l1 .dw{color:var(--accent);font-weight:600}
+.sess .l2{font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.sess .l2 b{color:var(--asagi);font-weight:600}
+.sess .l2 .lv{color:var(--warn)}
+.tagr{font-size:10.5px;font-weight:700;padding:0 6px;border-radius:4px;background:var(--heat0);color:var(--muted)}
+.tagb{font-size:11px;font-weight:700;padding:0 7px;border-radius:999px;background:var(--asagi-soft);color:var(--asagi)}
+.pdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:4px;vertical-align:middle}
+@media (prefers-reduced-motion:no-preference){.pdot{animation:blink 1.2s ease-in-out infinite}}
+@media (max-width:860px){.flow3{grid-template-columns:1fr;gap:22px}}
+/* ---- phone ---- */
+.grid2>*,.flow3>*,.live-grid>*,.wrap>*{min-width:0}
+h1,h2,h3{word-break:auto-phrase}
+@media (max-width:600px){
+  body{padding-block:0 40px}
+  header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);margin-inline:-16px;padding:10px 16px;border-bottom:1px solid var(--line);gap:8px}
+  .brand .tag{display:none}
+  .controls{flex:1 1 100%;flex-wrap:nowrap;min-width:0}
+  .controls select{flex:1;min-width:0;min-height:38px;font-size:13px;padding:6px 8px}
+  .seg button{min-height:38px;padding:6px 10px;font-size:13px}
+  .wrap{gap:14px}
+  .demo{font-size:12px}
+  .hello h1{font-size:19px}
+  .card{padding:14px}
+  .card h2{font-size:15px}
+  .live .head{flex-wrap:nowrap}
+  .live .lt{flex:1;min-width:0}
+  .now .big{font-size:48px}
+  .feed{height:200px}
+  .insights{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px;scrollbar-width:none}
+  .insights::-webkit-scrollbar{display:none}
+  .ins{flex:0 0 86%;scroll-snap-align:start}
+  .kpi{padding:12px 14px}
+  .kpi .v{font-size:22px}
+  .kpi svg{width:100%;max-width:120px}
+  .hist{height:110px}
+  table{min-width:0}
+  #links thead,#bysrc thead{display:none}
+  #links,#links tbody,#bysrc,#bysrc tbody{display:block}
+  #links tr{display:grid;grid-template-columns:28px auto auto 1fr auto;column-gap:8px;row-gap:4px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+  #links tr:last-child{border-bottom:0}
+  #links td{border:0;padding:0}
+  #links td:nth-child(1){grid-row:1/3;align-self:start}
+  #links td:nth-child(2){grid-column:2/5}
+  #links td:nth-child(6){grid-column:5;grid-row:1}
+  #links td:nth-child(3),#links td:nth-child(4),#links td:nth-child(5){grid-row:2;text-align:left;font-size:12.5px;white-space:nowrap;padding-right:6px}
+  #links td:nth-child(3){grid-column:2}#links td:nth-child(4){grid-column:3}#links td:nth-child(5){grid-column:4/6}
+  #links td:nth-child(3)::before{content:"クリック ";}
+  #links td:nth-child(4)::before{content:"率 ";}
+  #links td:nth-child(5)::before{content:"前期比 ";}
+  #links td::before{font-family:var(--sans);font-size:10.5px;color:var(--muted)}
+  #bysrc tr{display:grid;grid-template-columns:repeat(3,1fr);column-gap:8px;row-gap:6px;padding:10px 0;border-bottom:1px solid var(--line)}
+  #bysrc tr:last-child{border-bottom:0}
+  #bysrc td{border:0;padding:0;text-align:left;display:flex;flex-direction:column;font-size:13px;line-height:1.35}
+  #bysrc td:nth-child(1){grid-column:1/-1;font-weight:700;font-size:14px}
+  #bysrc td:nth-child(n+2)::before{font-family:var(--sans);font-size:10.5px;color:var(--muted);font-weight:400}
+  #bysrc td:nth-child(2)::before{content:"来た人"}
+  #bysrc td:nth-child(3)::before{content:"滞在（中央値）"}
+  #bysrc td:nth-child(4)::before{content:"3秒以内に離脱"}
+  #bysrc td:nth-child(5)::before{content:"タップした"}
+  #bysrc td:nth-child(6)::before{content:"タップ後に戻った"}
+  #bysrc td:nth-child(7)::before{content:"再訪の人"}
+  .heat{min-width:0;grid-template-columns:16px repeat(24,minmax(0,1fr));gap:2px}
+  .heat .hl{font-size:9px}
+  .src{grid-template-columns:84px 1fr 46px 56px;gap:8px;font-size:12.5px}
+  .todo li{padding:10px 0}
+  .todo input{width:20px;height:20px;margin-top:2px}
+}
+/* layout v2 */
+.topchart .head{align-items:center}
+.tchead{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.seg.big button{padding:8px 18px;font-size:14px;font-weight:500}
+.seg.big button[aria-pressed="true"]{font-weight:700}
+.hright{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wrap{gap:20px}
+.card{padding:20px 22px;border-radius:14px}
+.card h2{font-size:16.5px}
+.hello{gap:4px}
+.hello h1{font-size:24px}
+.summary{margin:6px 0 0;font-size:15px;line-height:1.8;color:var(--ink);max-width:62em}
+.summary b{font-weight:700}
+.summary .gv{color:var(--accent)} .summary .ga{color:var(--asagi)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;margin-top:-4px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font:inherit;font-size:14.5px;font-weight:500;color:var(--muted);background:none;border:0;padding:10px 16px 12px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;background-repeat:no-repeat;background-position:bottom;background-size:0 3px;transition:color .2s,background-size .25s}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);font-weight:700;background-image:var(--grad);background-size:100% 3px}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px}
+.ldot{width:7px;height:7px;border-radius:50%;background:#E0484E}
+.tcount{font-size:12px;font-weight:600;color:var(--bg);background:var(--accent);border-radius:999px;padding:0 7px;min-width:20px;text-align:center}
+.tcount:empty{display:none}
+.panel{display:flex;flex-direction:column;gap:20px}
+.panel[hidden]{display:none!important}
+.sect{display:flex;flex-direction:column;gap:2px;margin-bottom:-8px}
+.sect .st{font-size:16.5px}
+.sect .sub{margin:0}
+@media (prefers-reduced-motion:no-preference){.ldot{animation:blink 1.2s ease-in-out infinite}.panel:not([hidden]){animation:fade2 .25s ease-out}}
+@keyframes fade2{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (max-width:600px){
+  .hello h1{font-size:20px}
+  .summary{font-size:14px}
+  .tabs{margin-inline:-16px;padding-inline:8px}
+  .tab{padding:10px 12px 12px;font-size:14px}
+  .card{padding:16px}
+}
+/* period tiles */
+.topchart{--g1:#8E77E0;--g2:#BBA8F2;--g3:#EDC3EA}
+.topchart[data-p="day"]{--g1:#D98A1E;--g2:#F2BE5C;--g3:#FBE2A8}
+.topchart[data-p="week"]{--g1:#2A9FAD;--g2:#5CCAD4;--g3:#B4ECEF}
+.topchart .legend i{border-top-color:var(--g2)}
+.topchart .legend i.p{border-top-color:var(--prev)}
+.topchart .legend i.e{border-color:var(--g2)}
+.ptab[data-p="day"]{--c1:#D98A1E;--c2:#F2BE5C;--c3:#FBE2A8}
+.ptab[data-p="week"]{--c1:#2A9FAD;--c2:#5CCAD4;--c3:#B4ECEF}
+.ptab[data-p="month"]{--c1:#8E77E0;--c2:#BBA8F2;--c3:#EDC3EA}
+.ptabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.ptab{font:inherit;color:var(--ink);text-align:left;cursor:pointer;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"i t" "v v" "d d";align-items:center;gap:2px 10px;transition:border-color .2s,transform .15s,box-shadow .2s}
+.ptab:hover{border-color:color-mix(in srgb,var(--c2) 55%,var(--line))}
+.ptab:focus-visible{outline:2px solid var(--c2);outline-offset:2px}
+.ptab .pi{grid-area:i;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--c2);background:color-mix(in srgb,var(--c2) 16%,transparent)}
+.ptab .pt{grid-area:t;font-weight:700;font-size:15px;display:flex;align-items:baseline;gap:6px;min-width:0}
+.ptab .ps{font-size:11.5px;font-weight:400;color:var(--muted)}
+.ptab .pv{grid-area:v;font-size:26px;font-weight:700;line-height:1.2;margin-top:8px}
+.ptab .pv small{font-size:12px;font-weight:400;color:var(--muted);margin-left:3px}
+.ptab .pd{grid-area:d;font-size:12px}
+.ptab[aria-pressed="true"]{border-color:transparent;background:linear-gradient(color-mix(in srgb,var(--c1) 12%,var(--surface)),var(--surface)) padding-box,linear-gradient(135deg,var(--c1),var(--c2) 55%,var(--c3)) border-box;box-shadow:0 10px 28px -16px var(--c2)}
+.ptab[aria-pressed="true"] .pi{background:linear-gradient(135deg,var(--c1),var(--c2));color:#111}
+.ptab[aria-pressed="true"] .pv{background:linear-gradient(90deg,var(--c2),var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (prefers-reduced-motion:no-preference){.ptab:active{transform:scale(.98)}}
+@media (max-width:600px){
+  .ptabs{gap:8px;margin-bottom:14px}
+  .ptab{padding:10px;grid-template-columns:1fr;grid-template-areas:"i" "t" "v" "d";gap:2px;border-radius:12px}
+  .ptab .pi{width:28px;height:28px;border-radius:8px;margin-bottom:4px}
+  .ptab .pt{font-size:14px;flex-direction:column;gap:0}
+  .ptab .ps{font-size:10.5px}
+  .ptab .pv{font-size:19px;margin-top:4px}
+  .ptab .pv small{display:none}
+  .ptab .pd{font-size:10.5px}
+}
+/* histogram fix */
+.hist{height:auto!important;align-items:end;margin-bottom:6px}
+.hcol{height:auto}
+/* compact period tiles v2 */
+.ptabs{margin-bottom:-6px;gap:10px}
+.ptab{padding:10px 14px;grid-template-columns:auto auto 1fr;grid-template-areas:"i t d" "i v d";gap:0 12px;border-radius:12px;background:var(--surface)}
+.ptab .pi{width:36px;height:36px;border-radius:10px}
+.ptab .pt{font-size:13px;font-weight:600;color:var(--muted)}
+.ptab[aria-pressed="true"] .pt{color:var(--ink)}
+.ptab .pv{font-size:22px;margin-top:0;line-height:1.15}
+.ptab .pd{justify-self:end;align-self:center;text-align:right;font-size:12px}
+@media (max-width:600px){
+  .ptabs{gap:6px;margin-bottom:-4px}
+  .ptab{padding:8px 10px;grid-template-columns:auto 1fr;grid-template-areas:"i t" "v v" "d d";gap:0 6px;border-radius:10px}
+  .ptab .pi{width:22px;height:22px;border-radius:6px;margin:0}
+  .ptab .pi svg{width:14px;height:14px}
+  .ptab .pt{font-size:13px;flex-direction:row}
+  .ptab .pv{font-size:18px;margin-top:2px}
+  .ptab .pd{justify-self:start;text-align:left;font-size:10.5px}
+}
+@media (max-width:600px){
+  .topchart .head{flex-wrap:nowrap;margin-bottom:6px}
+  .topchart .legend{display:none}
+  .zbtn{padding:7px 9px}
+  .zbtn .zt{display:none}
+  .zbtn::before{width:14px;height:14px}
+}
+.mailbtn{position:relative;display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;flex:none}
+.mailbtn:hover{border-color:var(--g2)}
+.mailbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mbadge{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#E0484E;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.mbadge:empty{display:none}
+@media (max-width:600px){.mailbtn .mbl{display:none}.mailbtn{padding:8px 10px;min-height:38px}}
+/* mail */
+.demo-mail{margin:-4px 0 12px;font-size:12px;color:var(--faint)}
+.mail-grid{display:grid;grid-template-columns:minmax(260px,.9fr) 1.6fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:520px}
+.mlist{list-style:none;margin:0;padding:0;border-right:1px solid var(--line);overflow-y:auto;max-height:640px}
+.mlist li{border-bottom:1px solid var(--line)}
+.mitem{all:unset;box-sizing:border-box;display:grid;grid-template-columns:10px 1fr auto;gap:2px 10px;width:100%;padding:12px 14px;cursor:pointer}
+.mitem:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.mitem:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.mitem[aria-current="true"]{background:var(--accent-soft)}
+.mitem .ud{grid-row:1/4;width:8px;height:8px;border-radius:50%;margin-top:7px;background:transparent}
+.mitem.unread .ud{background:var(--g2)}
+.mitem .mf1{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mitem.unread .mf1{color:var(--ink);font-weight:700}
+.mitem .mt{font-size:11.5px;color:var(--faint);white-space:nowrap}
+.mitem .ms{grid-column:2/4;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mitem.unread .ms{font-weight:700}
+.mitem .mx{grid-column:2/4;display:flex;gap:6px;align-items:center;font-size:11.5px;color:var(--muted);min-width:0}
+.mitem .mx .sn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;flex:none}
+.st.new{background:var(--accent-soft);color:var(--accent-ink)}
+.st.open{background:rgba(242,190,92,.16);color:#F2BE5C}
+.st.replied{background:var(--good-soft);color:var(--good)}
+.mview{display:flex;flex-direction:column;min-width:0;max-height:640px}
+.mvhead{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.mvhead h3{font-size:17px;line-height:1.45}
+.mvfrom{font-size:13px;color:var(--muted)}
+.mvfrom b{color:var(--ink)}
+.route{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.route .rc{padding:2px 8px;border-radius:6px;background:var(--heat0);color:var(--ink)}
+.route .rc.l{background:var(--asagi-soft);color:var(--asagi)}
+.route .ra{color:var(--faint)}
+.back{display:none}
+.thread{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.bub{max-width:88%;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.bub.in{background:var(--heat0);align-self:flex-start;border-top-left-radius:4px}
+.bub.me{background:color-mix(in srgb,var(--g1) 26%,var(--surface));align-self:flex-end;border-top-right-radius:4px}
+.bub .bm{display:block;font-size:11px;color:var(--faint);margin-bottom:4px;white-space:normal}
+.composer{border-top:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.tpls{display:flex;flex-wrap:wrap;gap:6px}
+.tpl{font:inherit;font-size:12px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 11px;cursor:pointer}
+.tpl:hover{border-color:var(--g2)}
+.composer textarea{font:inherit;font-size:13.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:110px;resize:vertical;width:100%}
+.composer textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.crow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.crow .hint{font-size:11.5px;color:var(--faint)}
+.send{font:inherit;font-weight:700;font-size:13.5px;color:#111;background:var(--grad-d);border:0;border-radius:10px;padding:9px 20px;cursor:pointer}
+.send:disabled{opacity:.4;cursor:default}
+.send:focus-visible{outline:2px solid var(--g2);outline-offset:2px}
+.mempty{margin:auto;color:var(--faint);font-size:13px;padding:40px 20px;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--bg);font-size:13.5px;font-weight:500;padding:10px 18px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:calc(100% - 32px)}
+.toast[hidden]{display:none!important}
+@media (prefers-reduced-motion:no-preference){.toast:not([hidden]){animation:slidein .3s ease-out}}
+@media (max-width:760px){
+  .mail-grid{grid-template-columns:1fr;min-height:0}
+  .mlist{border-right:0;max-height:none}
+  .mview{display:none;max-height:none}
+  .mail-grid.showing .mlist{display:none}
+  .mail-grid.showing .mview{display:flex}
+  .back{display:inline-flex;align-self:flex-start;font:inherit;font-size:13px;color:var(--accent);background:none;border:0;padding:0 0 4px;cursor:pointer}
+  .thread{max-height:none}
+  .mail .head{flex-wrap:wrap}
+}
+footer{color:var(--faint);font-size:12px;text-align:center;padding-top:8px}
+
+@media (max-width:860px){
+  .insights{grid-template-columns:1fr}
+  .grid2,.grid2.wide{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi:nth-child(3){border-left:0}
+  .kpi:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width:420px){
+  .src{grid-template-columns:78px 1fr 44px 56px;gap:8px}
+  .kpi .v{font-size:22px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .bar span,.mini span{transition:width .5s ease}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="mark">lit<b>/</b>insight</span>
+      <span class="tag">数字を見るだけで終わらない、クリエイターのためのアクセス解析</span>
+    </div>
+    <div class="controls">
+      <button type="button" class="mailbtn" id="mailbtn" aria-label="お仕事メールを開く"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><span class="mbl">メール</span><span class="mbadge num" id="mailbadge"></span></button>
+      <select id="persona" aria-label="デモのクリエイター">
+        <option value="illust">カナスギ（ライター）</option>
+        <option value="vtuber">星乃ルカ（VTuber）</option>
+        <option value="handmade">atelier koto（アクセサリー作家）</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="demo"><strong>試作品・デモデータ表示中。</strong>架空のクリエイター3名の数字です。lit.linkと連携すると、ここに本人のデータが入ります。</div>
+
+  <div class="hello">
+    <h1 id="hello">カナスギさん、この30日のまとめです</h1>
+    <p id="range">8/29 – 9/27（前の30日と比較）</p>
+    <p class="summary" id="summary"></p>
+  </div>
+
+  <div class="ptabs" role="group" aria-label="期間の切り替え">
+        <button type="button" class="ptab" data-days="1" data-p="day" aria-pressed="false">
+          <span class="pi"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span><span class="pt">今日</span>
+          <span class="pv num" id="pv1">—</span><span class="pd num" id="pd1"></span>
+        </button>
+        <button type="button" class="ptab" data-days="7" data-p="week" aria-pressed="false">
+          <span class="pi"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 18V12M9 18V8M13 18v-4M17 18V6M21 18v-7M3 21h19"/></svg></span><span class="pt">週間</span>
+          <span class="pv num" id="pv7">—</span><span class="pd num" id="pd7"></span>
+        </button>
+        <button type="button" class="ptab" data-days="31" data-p="month" aria-pressed="true">
+          <span class="pi"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7.5 14h1M11.5 14h1M15.5 14h1M7.5 17.5h1M11.5 17.5h1"/></svg></span><span class="pt">月間</span>
+          <span class="pv num" id="pv31">—</span><span class="pd num" id="pd31"></span>
+        </button>
+  </div>
+
+  <section class="card topchart" aria-label="閲覧の動き">
+    <div class="head">
+      <div><h2 id="ctitle">この31日間の閲覧</h2><p class="sub" id="csub">丸印は投稿した日</p></div>
+      <div class="hright"><div class="legend"><span><i></i><span class="lgc">今期</span></span><span><i class="p"></i><span class="lgp">前期</span></span><span class="lge"><i class="e"></i>投稿</span></div>
+      <button type="button" class="btn zbtn" id="zoombtn" aria-haspopup="dialog" aria-label="拡大して見る"><span class="zt">拡大して見る</span></button></div>
+    </div>
+    <div class="chartbox" id="chart"><div class="tip" id="tip" hidden></div></div>
+    <div class="zoom" id="zoom" hidden role="dialog" aria-modal="true" aria-labelledby="ztitle">
+      <div class="zpanel">
+        <div class="zhead">
+          <div><h2 id="ztitle">閲覧の動き</h2><p class="sub" id="zrange"></p></div>
+          <div class="zbtns"><button type="button" class="btn" id="zreset" hidden>全体に戻す</button><button type="button" class="btn" id="zclose">閉じる</button></div>
+        </div>
+        <p class="zhint">グラフの上を横になぞると、その期間をさらに拡大します</p>
+        <div class="chartbox" id="zchart"><div class="tip" id="ztip" hidden></div></div>
+        <div class="legend"><span><i></i><span class="lgc">今期</span></span><span><i class="p"></i><span class="lgp">前期</span></span><span class="lge"><i class="e"></i>投稿した日</span></div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="表示の切り替え">
+    <button type="button" class="tab" role="tab" id="tab-sum" data-tab="sum" aria-selected="true">まとめ</button>
+    <button type="button" class="tab" role="tab" id="tab-live" data-tab="live" aria-selected="false"><span class="ldot"></span>いま<span class="tcount num" id="tabnow"></span></button>
+    <button type="button" class="tab" role="tab" id="tab-flow" data-tab="flow" aria-selected="false">来た人の動き</button>
+    <button type="button" class="tab" role="tab" id="tab-links" data-tab="links" aria-selected="false">リンク・時間帯</button>
+    <button type="button" class="tab" role="tab" id="tab-mail" data-tab="mail" aria-selected="false">お仕事メール<span class="tcount num" id="tabmail"></span></button>
+  </nav>
+
+  <div class="panel" data-panel="sum" role="tabpanel" aria-labelledby="tab-sum">
+  <section class="kpis" id="kpis" aria-label="主要な数字"></section>
+    <div class="sect"><h2 class="st">気づき</h2><p class="sub">数字から読み取れることと、次のアクション</p></div>
+  <section class="insights" id="insights" aria-label="今期の気づき"></section>
+  <section class="card">
+      <div class="head"><div><h2>今週やること</h2><p class="sub">気づきから作ったチェックリスト。終えたらチェックすると、その日を起点に前後の数字を比べます</p></div><div class="prog"><span class="num" id="progt">0 / 0 完了</span><div class="pbar"><span id="progb"></span></div></div></div>
+      <ul class="todo" id="todo"></ul>
+  </section>
+  </div>
+
+  <div class="panel" data-panel="live" role="tabpanel" aria-labelledby="tab-live" hidden>
+  <section class="card live" aria-label="リアルタイム">
+    <div class="head">
+      <div class="lt"><span class="livebadge" id="livebadge"><i></i>LIVE</span><div><h2>いまのプロフィール</h2><p class="sub">デモ用に時間を早送りしています</p></div></div>
+      <button type="button" id="pause" class="btn">一時停止</button>
+    </div>
+    <div class="surge" id="surge" hidden></div>
+    <div class="live-grid">
+      <div class="now">
+        <span class="label">いま見ている人</span>
+        <span class="big num" id="nowv">0</span>
+        <div class="today">
+          <div><span class="label">今日の閲覧</span><span class="num tv" id="tv">0</span></div>
+          <div><span class="label">今日のクリック</span><span class="num tv" id="tc">0</span></div>
+        </div>
+      </div>
+      <div class="stream">
+        <span class="label">直近90秒の閲覧（3秒ごと）</span>
+        <div id="stream"></div>
+      </div>
+      <div class="feedbox">
+        <span class="label">いま来ている人の動き</span>
+        <ul class="feed" id="feed" aria-live="off"></ul>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <div class="panel" data-panel="flow" role="tabpanel" aria-labelledby="tab-flow" hidden>
+  <section class="card">
+    <div class="head"><div><h2>来た人のその後</h2><p class="sub">何秒いたか、どこをタップしたか、戻ってきたか</p></div></div>
+    <div class="flow3">
+      <div class="fcol">
+        <span class="label">滞在時間</span>
+        <div class="bignum"><span class="num" id="dwMed">0秒</span><span class="sub">中央値</span></div>
+        <div class="hist" id="dwHist"></div>
+        <p class="note" id="dwNote"></p>
+      </div>
+      <div class="fcol">
+        <span class="label">来た人が次にしたこと</span>
+        <div id="funnel"></div>
+      </div>
+      <div class="fcol">
+        <span class="label">どこへ移動したか（タップの内訳と戻り率）</span>
+        <div id="dest"></div>
+      </div>
+    </div>
+    <div class="tablewrap srcflow"><table id="bysrc"></table></div>
+  </section>
+  <section class="card">
+      <div class="head"><div><h2>どこから来たか</h2><p class="sub">流入元の割合と、前期からの増減（ポイント）</p></div></div>
+      <div class="srclist" id="sources"></div>
+  </section>
+  </div>
+
+  <div class="panel" data-panel="links" role="tabpanel" aria-labelledby="tab-links" hidden>
+  <section class="card">
+      <div class="head"><div><h2>リンク別の成績</h2><p class="sub">並び順とクリック率を並べて、置き場所の見直しに使います</p></div></div>
+      <div class="tablewrap"><table id="links"></table></div>
+  </section>
+  <section class="card">
+      <div class="head"><div><h2>見られている時間帯</h2><p class="sub">曜日×時間（0時〜24時、1マス＝1時間）。濃いほど閲覧が集中しています</p></div></div>
+      <div class="tablewrap"><div class="heat" id="heat"></div></div>
+      <p class="heatnote" id="heatnote"></p>
+  </section>
+  </div>
+
+  <div class="panel" data-panel="mail" role="tabpanel" aria-labelledby="tab-mail" hidden>
+  <section class="card mail">
+    <div class="head">
+      <div><h2>お仕事メール</h2><p class="sub">お仕事依頼フォームから届いたメールと返信。どの入口とリンクを通って届いたかも表示します</p></div>
+      <div class="seg mf" role="group" aria-label="絞り込み">
+        <button type="button" data-f="all" aria-pressed="true">すべて</button>
+        <button type="button" data-f="unread">未読</button>
+        <button type="button" data-f="todo">返信待ち</button>
+      </div>
+    </div>
+    <p class="demo-mail">デモ表示です。返信しても実際には送信されません。</p>
+    <div class="mail-grid" id="mailgrid">
+      <ul class="mlist" id="mlist"></ul>
+      <div class="mview" id="mview"></div>
+    </div>
+  </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <footer>Lit Insight 試作 v0.1 ・ デモデータ</footer>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const DAYS=180, END=new Date(2026,8,28);
+const WD='日月火水木金土';
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const fmt=n=>Math.round(n).toLocaleString('ja-JP');
+const md=d=>`${d.getMonth()+1}/${d.getDate()}`;
+
+const P={
+  illust:{name:'カナスギ',seed:11,base:85,growth:.35,
+    src:{'X':.40,'Instagram':.22,'TikTok':.08,'YouTube':.04,'検索':.10,'直接・その他':.16},
+    shift:{'X':-.08,'Instagram':.06,'TikTok':.04},
+    links:[['X（旧Twitter）',.07],['執筆実績・ポートフォリオ',.10],['note',.085],['Instagram',.05],['お仕事依頼フォーム',.12],['寄稿・掲載記事一覧',.055]],
+    wd:[1.2,.9,.9,.95,1,1.12,1.25],peaks:[[12,.5],[21.5,1]],
+    ev:[[3,'新しい記事をXで告知','X',2.6],[12,'Instagramに執筆風景を投稿','Instagram',2.0],[24,'取材の裏話をTikTokへ','TikTok',1.8],[44,'執筆依頼の募集告知','X',2.2],[63,'新しい記事をXで告知','X',2.0],[88,'Instagramに執筆風景を投稿','Instagram',1.7],[118,'noteの有料記事を告知','X',1.9],[150,'新しい記事をXで告知','X',1.8]]},
+  vtuber:{name:'星乃ルカ',seed:23,base:420,growth:.18,
+    src:{'YouTube':.36,'X':.34,'TikTok':.14,'Instagram':.03,'検索':.05,'直接・その他':.08},
+    shift:{'TikTok':.07,'X':-.05},
+    links:[['YouTubeチャンネル',.09],['配信スケジュール',.05],['X（旧Twitter）',.045],['グッズ通販',.06],['メンバーシップ',.075],['FANBOX',.03]],
+    wd:[1.25,.85,.88,.9,.95,1.15,1.3],peaks:[[22,1],[1,.35]],
+    ev:[[2,'誕生日記念配信の告知','X',2.3],[9,'切り抜きショートがバズ','TikTok',3.1],[26,'新衣装お披露目配信','YouTube',2.4],[47,'コラボ配信','YouTube',1.9],[71,'切り抜きショート','TikTok',1.8],[99,'グッズ発売告知','X',2.1],[135,'歌ってみた公開','YouTube',2.2]]},
+  handmade:{name:'atelier koto',seed:37,base:85,growth:.28,
+    src:{'Instagram':.52,'検索':.14,'X':.08,'Pinterest':.07,'LINE':.07,'直接・その他':.12},
+    shift:{'Pinterest':.05,'Instagram':-.04},
+    links:[['minneショップ',.12],['Instagram',.05],['新作一覧',.08],['Creemaショップ',.07],['イベント出店情報',.045],['LINE公式（再入荷通知）',.11]],
+    wd:[1.3,.85,.9,.9,.95,1.05,1.2],peaks:[[21,1],[12.5,.45],[7.5,.25]],
+    ev:[[4,'新作ピアスのリール','Instagram',2.5],[15,'再入荷のお知らせ','Instagram',2.1],[29,'Pinterestにピン追加','Pinterest',1.6],[52,'イベント出店告知','Instagram',1.9],[80,'新作リング撮影','Instagram',1.8],[112,'セール告知','Instagram',2.0]]}
+};
+
+function build(key){
+  const c=P[key], r=rng(c.seed), srcNames=Object.keys(c.src);
+  const evAt={}; c.ev.forEach(e=>{evAt[DAYS-1-e[0]]=e});
+  const days=[];
+  for(let t=0;t<DAYS;t++){
+    const date=new Date(END); date.setDate(END.getDate()-(DAYS-1-t));
+    const f=t/(DAYS-1);
+    let base=c.base*(1+c.growth*f)*c.wd[date.getDay()]*(.86+.28*r());
+    const shares={}; let tot=0;
+    srcNames.forEach(s=>{const v=Math.max(.01,c.src[s]+(c.shift[s]||0)*(f-.5)*2);shares[s]=v;tot+=v});
+    const bySrc={}; srcNames.forEach(s=>bySrc[s]=base*shares[s]/tot);
+    let ev=null;
+    for(const k in evAt){const e=+k,dt=t-e; if(dt>=0&&dt<4){const ex=c.base*(evAt[k][3]-1)*[1,.5,.22,.08][dt]; bySrc[evAt[k][2]]+=ex*.8; srcNames.forEach(s=>bySrc[s]+=ex*.2/srcNames.length); if(dt===0)ev=evAt[k][1];}}
+    const views=srcNames.reduce((a,s)=>a+bySrc[s],0);
+    const clicks=c.links.map(l=>views*l[1]*(.8+.4*r()));
+    days.push({date,views,bySrc,clicks,ev});
+  }
+  // heat
+  const heat=[];
+  for(let d=0;d<7;d++){heat[d]=[];for(let h=0;h<24;h++){let v=.06+(h>=7&&h<=24?.08:0);c.peaks.forEach(([ph,w])=>{let dh=Math.min(Math.abs(h-ph),24-Math.abs(h-ph));v+=w*Math.exp(-dh*dh/4.5)});if(h>=2&&h<=6)v*=.35;heat[d][h]=v*c.wd[d]*(.9+.2*r())}}
+  const SRCP={'X':[9,.45,.9,.30],'Instagram':[14,.52,1.1,.35],'TikTok':[4.5,.28,.5,.12],'YouTube':[18,.55,1.2,.45],'検索':[22,.6,1,.15],'直接・その他':[25,.65,1.4,.6],'Pinterest':[11,.4,.8,.2],'LINE':[20,.6,1.4,.7]};
+  const FL={};srcNames.forEach(s=>{const q=SRCP[s];FL[s]={med:q[0]*(.88+.24*r()),tap:q[1]*(.9+.2*r()),uf:q[2],rev:q[3]*(.85+.3*r())}});
+  const linkU=c.links.map(()=>.12+.3*r());
+  return {c,days,srcNames,heat,FL,linkU};
+}
+
+let state={persona:'illust',days:31,tab:'sum'};
+try{const s=JSON.parse(localStorage.getItem('litinsight-ui')||'{}');if(P[s.persona])state.persona=s.persona;if([1,7,31].includes(s.days))state.days=s.days;if(['sum','live','flow','links','mail'].includes(s.tab))state.tab=s.tab}catch(e){}
+if(['sum','live','flow','links','mail'].includes(location.hash.slice(1)))state.tab=location.hash.slice(1);
+function saveUI(){try{localStorage.setItem('litinsight-ui',JSON.stringify(state))}catch(e){}}
+let done={}; try{done=JSON.parse(localStorage.getItem('litinsight-todo')||'{}')}catch(e){}
+
+function sum(a,f){return a.reduce((x,d)=>x+f(d),0)}
+function delta(cur,prev){if(!prev)return{t:'—',cls:'flat'};const p=(cur-prev)/prev*100;const cls=Math.abs(p)<1?'flat':p>0?'up':'down';return{t:(p>0?'+':'')+p.toFixed(1)+'%',cls}}
+function spark(vals,col='var(--accent)'){const w=90,h=24,mx=Math.max(...vals),mn=Math.min(...vals);const pts=vals.map((v,i)=>[(i/(vals.length-1))*w,h-2-(v-mn)/((mx-mn)||1)*(h-4)]);return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline fill="none" stroke="${col}" stroke-width="1.5" points="${pts.map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ')}"/><circle cx="${pts.at(-1)[0].toFixed(1)}" cy="${pts.at(-1)[1].toFixed(1)}" r="2.5" fill="${col}"/></svg>`}
+
+let livePersona=null;
+function render(anim){
+  const {c,days,srcNames,heat,FL,linkU}=build(state.persona);
+  const N=state.days;
+  // today's progress (hourly weights from the heat curve)
+  const now=new Date(),hNow=now.getHours(),mNow=now.getMinutes()/60;
+  const hw=dow=>{const w=heat[dow].map(v=>v);const t=w.reduce((a,b)=>a+b,0);return w.map(v=>v/t)};
+  const tD=days.at(-1),yD=days.at(-2),hwT=hw(tD.date.getDay()),hwY=hw(yD.date.getDay());
+  const fracOf=w=>w.slice(0,hNow).reduce((a,b)=>a+b,0)+w[hNow]*mNow;
+  const fT=fracOf(hwT),fY=fracOf(hwY);
+  const scale=(d,f)=>({...d,views:d.views*f,bySrc:Object.fromEntries(Object.entries(d.bySrc).map(([k2,v])=>[k2,v*f])),clicks:d.clicks.map(q=>q*f)});
+  const D=days.slice(0,-1).concat([scale(tD,fT)]);
+  let cur,prev;
+  if(N===1){cur=[D.at(-1)];prev=[scale(yD,fY)]}else{cur=D.slice(-N);prev=D.slice(-2*N,-N)}
+  const one=N===1,cmp=one?'昨日比':'前期比';
+  [1,7,31].forEach(n=>{const cc=n===1?[D.at(-1)]:D.slice(-n),pp2=n===1?[scale(yD,fY)]:D.slice(-2*n,-n);
+    const v=sum(cc,d=>d.views),vp=sum(pp2,d=>d.views),dl=delta(v,vp);
+    $('#pv'+n).innerHTML=`${fmt(v)}<small>閲覧</small>`;
+    $('#pd'+n).innerHTML=`<span class="${dl.cls}">${n===1?'昨日比':'前期比'} ${dl.t}</span>`;});
+  document.querySelectorAll('.ptab').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.days===N));
+  $('.topchart').dataset.p=N===1?'day':N===7?'week':'month';
+  $('#persona').value=state.persona;
+  const wdS=d=>`${md(d)}（${WD[d.getDay()]}）`;
+  $('#hello').innerHTML=`<span class="gt">${c.name}</span>さん、${one?'今日':N===7?'この1週間':'この1か月'}の動きです`;
+  $('#range').textContent=one?`${wdS(tD.date)} 0時〜${hNow}時${now.getMinutes()}分（昨日の同じ時刻までと比較）`:`${md(cur[0].date)} – ${md(cur.at(-1).date)}（前の${N}日間と比較・今日は現在までの数字）`;
+
+  // KPIs
+  const vC=sum(cur,d=>d.views),vP=sum(prev,d=>d.views);
+  const kC=sum(cur,d=>sum(d.clicks,x=>x)),kP=sum(prev,d=>sum(d.clicks,x=>x));
+  const rC=kC/vC*100,rP=kP/vP*100;
+  const k=[
+    [one?'今日の閲覧':'閲覧数',fmt(vC),delta(vC,vP),cur.map(d=>d.views)],
+    ['リンクのクリック',fmt(kC),delta(kC,kP),cur.map(d=>sum(d.clicks,x=>x))],
+    ['クリック率',rC.toFixed(1)+'%',(()=>{const p=rC-rP;return{t:(p>0?'+':'')+p.toFixed(1)+'pt',cls:Math.abs(p)<.1?'flat':p>0?'up':'down'}})(),cur.map(d=>sum(d.clicks,x=>x)/d.views)],
+    [one?'1時間あたりの閲覧':'1日あたりの閲覧',fmt(one?vC/Math.max(1,hNow+mNow):vC/N),delta(vC,vP),null]
+  ];
+  $('#kpis').innerHTML=k.map(([l,v,d,s])=>`<div class="kpi"><span class="label">${l}</span><span class="v num">${v}</span><span class="d num ${d.cls}">${cmp} ${d.t}</span>${s&&N>7?spark(s,l.includes('クリック')?'var(--asagi)':'var(--accent)'):''}</div>`).join('');
+
+  // sources
+  const sC={},sP={};srcNames.forEach(s=>{sC[s]=sum(cur,d=>d.bySrc[s])/vC*100;sP[s]=sum(prev,d=>d.bySrc[s])/vP*100});
+  const order=[...srcNames].sort((a,b)=>sC[b]-sC[a]);
+  $('#sources').innerHTML=order.map(s=>{const dd=sC[s]-sP[s];const cls=Math.abs(dd)<.3?'flat':dd>0?'up':'down';return `<div class="src"><span>${s}</span><div class="bar"><span style="width:${(sC[s]/sC[order[0]]*100).toFixed(1)}%"></span></div><span class="pct num">${sC[s].toFixed(1)}%</span><span class="dl num ${cls}">${dd>0?'+':''}${dd.toFixed(1)}pt</span></div>`}).join('');
+
+  // links
+  const L=c.links.map((l,i)=>{const cc=sum(cur,d=>d.clicks[i]),cp=sum(prev,d=>d.clicks[i]);return{name:l[0],pos:i+1,clicks:cc,ctr:cc/vC*100,d:delta(cc,cp)}});
+  const avgCtr=sum(L,x=>x.ctr)/L.length;
+  const byCtr=[...L].sort((a,b)=>b.ctr-a.ctr);
+  byCtr.forEach((l,i)=>l.rank=i+1);
+  const moveUp=byCtr.find(l=>l.rank<=2&&l.pos>=4);
+  const weakTop=L[0].ctr<avgCtr?L[0]:null;
+  const maxClicks=Math.max(...L.map(l=>l.clicks));
+  $('#links').innerHTML=`<thead><tr><th>順番</th><th>リンク</th><th class="r">クリック</th><th class="r">クリック率</th><th class="r">前期比</th><th>見立て</th></tr></thead><tbody>`+
+    L.map(l=>{let chip='<span class="flat" style="font-size:12px">—</span>';
+      if(l===moveUp)chip='<span class="chip move">上へ移動</span>';
+      else if(l===weakTop)chip='<span class="chip warn">見直し</span>';
+      else if(l.rank===1)chip='<span class="chip good">主力</span>';
+      return `<tr data-i="${l.pos-1}"><td><span class="pos">${l.pos}</span></td><td>${l.name}<div class="mini"><span style="width:${(l.clicks/maxClicks*100).toFixed(1)}%"></span></div></td><td class="r num">${fmt(l.clicks)}</td><td class="r num">${l.ctr.toFixed(1)}%</td><td class="r num ${l.d.cls}">${l.d.t}</td><td>${chip}</td></tr>`}).join('')+'</tbody>';
+
+  // heat
+  let mx=0,best=[0,0];heat.forEach((row,d)=>row.forEach((v,h)=>{if(v>mx){mx=v;best=[d,h]}}));
+  let hh='<span></span>';for(let h=0;h<24;h++)hh+=h===23?`<span class="hl end">24</span>`:`<span class="hl">${h%3===0?h:''}</span>`;
+  [1,2,3,4,5,6,0].forEach(d=>{hh+=`<span class="rl">${WD[d]}</span>`;for(let h=0;h<24;h++){const a=heat[d][h]/mx;const isB=d===best[0]&&h===best[1];hh+=`<span class="c${isB?' best':''}" title="${WD[d]}曜 ${h}時台" style="background:color-mix(in srgb, var(--accent) ${Math.round(a*100)}%, var(--heat0))"></span>`}});
+  $('#heat').innerHTML=hh;
+  const postH=(best[1]+23)%24;
+  $('#heatnote').innerHTML=`いちばん見られているのは <strong>${WD[best[0]]}曜の${best[1]}時台</strong>。投稿は1時間前の <strong>${postH}時ごろ</strong> が狙い目です。`;
+
+  // biggest event in period
+  const med=[...cur.map(d=>d.views)].sort((a,b)=>a-b)[Math.floor(N/2)];
+  let top=null;cur.forEach((d,i)=>{if(d.ev){const peak=Math.max(d.views,(cur[i+1]||d).views);const ratio=peak/med;if(!top||ratio>top.ratio)top={d,ratio}}});
+
+  // flow
+  const SIG=.95;
+  const Fq=(t,med)=>t<=0?0:.5*(1+erf(Math.log(t/med)/(SIG*Math.SQRT2)));
+  const w={};srcNames.forEach(s=>w[s]=sC[s]/100);
+  const Fall=t=>srcNames.reduce((a,s)=>a+w[s]*Fq(t,FL[s].med),0);
+  let lo=.5,hi=150;for(let k=0;k<40;k++){const m=(lo+hi)/2;Fall(m)<.5?lo=m:hi=m}
+  const medAll=Math.round(lo);
+  const edges=[0,3,10,30,60,Infinity],hx=['〜3秒','3〜10秒','10〜30秒','30〜60秒','60秒〜'];
+  const hist=hx.map((_,i)=>(edges[i+1]===Infinity?1:Fall(edges[i+1]))-Fall(edges[i]));
+  const hmx=Math.max(...hist);
+  $('#dwMed').textContent=medAll+'秒';
+  $('#dwHist').innerHTML=hist.map((v,i)=>`<div class="hcol${i===0?' q':''}"><span class="hv num">${(v*100).toFixed(0)}%</span><div class="b" style="height:${(v/hmx*88).toFixed(0)}px"></div><span class="hx">${hx[i]}</span></div>`).join('');
+  $('#dwNote').innerHTML=`<strong>${(hist[0]*100).toFixed(0)}%</strong> の人が3秒以内に離脱しています。30秒以上じっくり見ている人は <strong>${((hist[3]+hist[4])*100).toFixed(0)}%</strong>。`;
+  const tapAll=srcNames.reduce((a,s)=>a+w[s]*FL[s].tap,0);
+  const ufAvg=srcNames.reduce((a,s)=>a+w[s]*FL[s].tap*FL[s].uf,0)/tapAll;
+  const totC=sum(L,l=>l.clicks);
+  const lu=L.map((l,i)=>Math.min(.6,linkU[i]*ufAvg));
+  const uAll=L.reduce((a,l,i)=>a+l.clicks/totC*lu[i],0);
+  const ret=tapAll*uAll;
+  const fr=[['プロフィールに来た人',1,''],['リンクをタップした',tapAll,' t'],['何もせず離脱した',1-tapAll,' w'],['タップ先から戻ってきた',ret,' sub1 t'],['戻ってもう一度タップ',ret*.55,' sub1 t']];
+  $('#funnel').innerHTML=fr.map(([n,v,cl])=>`<div class="frow${cl}"><div class="ft"><span>${n}</span><span class="num">${(v*100).toFixed(1)}%</span></div><div class="fbar"><span style="width:${(v*100).toFixed(1)}%"></span></div></div>`).join('')+`<p class="note">来た人${fmt(vC)}人のうち、約${fmt(vC*ret)}人がリンク先を見てから戻ってきています。</p>`;
+  const dl=L.map((l,i)=>({...l,share:l.clicks/totC,ru:lu[i]})).sort((a,b)=>b.share-a.share);
+  const dmx=dl[0].share;
+  $('#dest').innerHTML=dl.map(l=>`<div class="drow"><span class="n" title="${l.name}">${l.name}</span><div class="fbar a"><span style="width:${(l.share/dmx*100).toFixed(1)}%"></span></div><span class="p num">${(l.share*100).toFixed(0)}%</span><span class="rt">戻り ${(l.ru*100).toFixed(0)}%</span></div>`).join('')+`<p class="note">「戻り」はタップした後にlit.linkへ戻ってきた人の割合です。</p>`;
+  const sOrd=[...srcNames].sort((a,b)=>sC[b]-sC[a]);
+  $('#bysrc').innerHTML=`<thead><tr><th>流入元</th><th class="r">来た人</th><th class="r">滞在（中央値）</th><th class="r">3秒以内に離脱</th><th class="r">タップした</th><th class="r">タップ後に戻った</th><th class="r">再訪の人</th></tr></thead><tbody>`+
+    sOrd.map(s=>{const f=FL[s],q=Fq(3,f.med),u=uAll/ufAvg*f.uf;return `<tr><td>${s}</td><td class="r num">${fmt(vC*w[s])}</td><td class="r num">${Math.round(f.med)}秒</td><td class="r num${q>.3?' bad':''}">${(q*100).toFixed(0)}%</td><td class="r num">${(f.tap*100).toFixed(0)}%</td><td class="r num">${(Math.min(.6,u)*100).toFixed(0)}%</td><td class="r num">${(f.rev*100).toFixed(0)}%</td></tr>`}).join('')+'</tbody>';
+
+  $('#summary').innerHTML=`${one?'今日ここまでの':''}閲覧は<b class="gv">${fmt(vC)}回</b>（${cmp} ${k[0][2].t}）、リンクのクリックは<b class="ga">${fmt(kC)}回</b>。いちばん多い入口は<b>${order[0]}</b>（${sC[order[0]].toFixed(0)}%）で、来た人の<b>${(tapAll*100).toFixed(0)}%</b>がリンクをタップしています。`;
+  // insights
+  const grow=[...srcNames].sort((a,b)=>(sC[b]-sP[b])-(sC[a]-sP[a]))[0];
+  const ins=[];
+  if(moveUp){const gain=Math.round(moveUp.clicks*.35);ins.push({type:'chance',chip:'チャンス',h:`「${moveUp.name}」は${moveUp.pos}番目なのに、クリック率が${moveUp.rank}位`,p:`上から${moveUp.pos}番目に置かれていますが、クリック率は全リンクの中で${moveUp.rank}位です。`,a:`「${moveUp.name}」を2番目に移動する`});}
+  const qs=srcNames.filter(s=>sC[s]>=8).map(s=>({s,q:Fq(3,FL[s].med),med:Math.round(FL[s].med)})).sort((a,b)=>b.q-a.q)[0];
+  if(qs&&qs.q>.3)ins.push({type:'warn',chip:'注意',h:`${qs.s}から来た人の${(qs.q*100).toFixed(0)}%が3秒以内に離脱`,p:`${qs.s}から来た人の滞在は中央値${qs.med}秒で、全体（${medAll}秒）より短めです。`,a:`1番目のリンクを「${qs.s}で紹介した作品・商品」にする`});
+  if(sC[grow]-sP[grow]>.5)ins.push({type:'good',chip:'伸びている',h:`${grow}からの流入が前期より+${(sC[grow]-sP[grow]).toFixed(1)}pt`,p:`全体の${sC[grow].toFixed(1)}%まで増えました。${grow}のプロフィール欄にlit.linkのURLがあるか、もう一度確認しておきましょう。`,a:`${grow}のプロフィール文とリンクを見直す`});
+  if(weakTop)ins.push({type:'warn',chip:'注意',h:`1番目の「${weakTop.name}」はクリック率が平均以下`,p:`いちばん目立つ場所が、あまり押されていません（${weakTop.ctr.toFixed(1)}%／平均${avgCtr.toFixed(1)}%）。ここは今いちばん届けたいものに使いましょう。`,a:`1番目のリンクを「今いちばん見てほしいもの」に差し替える`});
+  ins.push({type:'chance',chip:'ヒント',h:`${WD[best[0]]}曜${best[1]}時台に閲覧が集中`,p:`フォロワーがプロフィールを見に来る時間です。告知はこの少し前に出すと効きやすくなります。`,a:`次の告知を${WD[best[0]]}曜${postH}時に予約する`});
+  $('#insights').innerHTML=ins.slice(0,3).map(i=>`<article class="ins"><span class="chip ${i.type}">${i.chip}</span><h3>${i.h}</h3><p>${i.p}</p><div class="act">${i.a}</div></article>`).join('');
+
+  // todo
+  const TD=ins.map((i,n)=>({i,n,id:`${state.persona}-${n}-${i.a}`}));
+  const doneAt=id=>{const v=done[id];return v?(v===1?Date.now():v):0};
+  TD.sort((p1,p2)=>(!!doneAt(p1.id))-(!!doneAt(p2.id))||p1.n-p2.n);
+  const nd=TD.filter(t=>doneAt(t.id)).length;
+  $('#progt').textContent=`${nd} / ${TD.length} 完了`;$('#progb').style.width=(TD.length?nd/TD.length*100:0)+'%';
+  const dstr=t=>{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`};
+  $('#todo').innerHTML=TD.map(({i,n,id})=>{const at=doneAt(id),ck=!!at;
+    let after='';
+    if(ck){const due=new Date(at+7*864e5),left=Math.ceil((due-Date.now())/864e5);
+      after=`<span class="after"><b>完了 ${dstr(at)}</b>　${left>0?`あと${left}日（${due.getMonth()+1}/${due.getDate()}）で、実行前7日間と実行後7日間の数字を並べて表示します`:'実行前後の比較ができます'}</span>`}
+    return `<li class="${ck?'done':''}"><input type="checkbox" id="t${n}" data-id="${encodeURIComponent(id)}" ${ck?'checked':''}><label for="t${n}"><span class="tt">${i.a}</span><span class="why">${i.chip}：${i.h}</span>${after}</label></li>`}).join('');
+
+  // chart points
+  let pc,pp,labs;
+  const clk=d=>sum(d.clicks,q=>q);
+  if(one){
+    const jit=h=>.85+.3*((Math.sin((h+1)*12.9898+c.seed*78.233)*43758.5453)%1+1)%1;
+    const hv=(d,w,h)=>d.views*w[h]*jit(h),hc=(d,w,h)=>clk(d)*w[h]*jit(h);
+    labs=Array.from({length:24},(_,h)=>h+'時');
+    pc=[];for(let h=0;h<(hNow===0?1:hNow);h++){const f=h===hNow?mNow:1;pc.push({views:hv(tD,hwT,h)*f,clk:hc(tD,hwT,h)*f,tip:`今日 ${h}時台`})}
+    pp=labs.map((_,h)=>({views:hv(yD,hwY,h),clk:hc(yD,hwY,h),tip:''}));
+  }else{
+    labs=cur.map(d=>md(d.date));
+    pc=cur.map((d,i)=>({views:d.views,clk:clk(d),ev:d.ev,tip:wdS(d.date)+(i===cur.length-1?' 現在まで':'')}));
+    pp=prev.map(d=>({views:d.views,clk:clk(d)}));
+  }
+  $('#ctitle').textContent=one?'今日の閲覧（1時間ごと）':N===7?'この7日間の閲覧':'この31日間の閲覧';
+  $('#csub').textContent=one?'点線は昨日の同じ時間帯':'丸印は投稿した日。点線は'+(N===7?'その前の7日間':'その前の31日間');
+  document.querySelectorAll('.lgc').forEach(e=>e.textContent=one?'今日':N===7?'今週':'今月');
+  document.querySelectorAll('.lgp').forEach(e=>e.textContent=one?'昨日':'その前');
+  document.querySelectorAll('.lge').forEach(e=>e.hidden=one);
+  CH.nowIdx=one?hNow:null;CH.partial=!one;
+  drawChart(pc,pp,labs,anim,one?'昨日の同じ時間':'前の期間の同じ位置');
+  renderMail();
+  if(livePersona!==state.persona){livePersona=state.persona;startLive(c,days,srcNames,sC,L,FL,linkU,D.at(-1));}
+}
+
+let CH={cur:[],prev:[],labs:[],range:null,pn:''};
+function drawChart(cur,prev,labs,anim,pn){
+  CH.cur=cur;CH.prev=prev;CH.labs=labs;CH.pn=pn;
+  plot($('#chart'),$('#tip'),cur,prev,{anim,id:'m',labs,pn,nowIdx:CH.nowIdx,partial:CH.partial});
+  if(!$('#zoom').hidden)drawZoom();
+}
+function plot(box,tip,cur,prev,o){
+  const big=!!o.big,labs=o.labs;
+  const W=Math.max(300,box.clientWidth);
+  const H=big?Math.max(260,Math.min(560,Math.round(window.innerHeight*.62))):(W<500?180:230);
+  const pad={l:big?52:44,r:big?18:14,t:18,b:big?34:28};
+  const n=labs.length,iw=W-pad.l-pad.r,ih=H-pad.t-pad.b,fs=big?12.5:11;
+  const raw=Math.max(1,...cur.map(d=>d.views),...prev.map(d=>d.views))*1.08;
+  const st=raw/4,mag=10**Math.floor(Math.log10(st)),nm=[1,1.5,2,2.5,3,4,5,6,8,10].find(m=>m*mag>=st),top=nm*mag*4;
+  const x=i=>pad.l+(n===1?iw/2:iw*i/(n-1)),y=v=>pad.t+ih*(1-v/top);
+  const id=o.id;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="閲覧数のグラフ"><defs><linearGradient id="ga${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--g2);stop-opacity:.45"/><stop offset="1" style="stop-color:var(--g3);stop-opacity:.03"/></linearGradient><linearGradient id="gl${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:var(--g1)"/><stop offset=".6" style="stop-color:var(--g2)"/><stop offset="1" style="stop-color:var(--g3)"/></linearGradient></defs>`;
+  for(let k=0;k<=4;k++){const v=top*k/4,yy=y(v).toFixed(1);s+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${yy}" y2="${yy}" stroke="var(--line)" stroke-width="1"/><text x="${pad.l-8}" y="${(+yy+4)}" text-anchor="end" font-size="${fs}" fill="var(--faint)" font-family="Noto Sans JP,sans-serif">${fmt(v)}</text>`}
+  let tk=[];
+  if(n===24&&labs[0]==='0時'){const step=iw<420?6:3;for(let h=0;h<24;h+=step)tk.push(h);tk.push(23)}
+  else{const t=Math.max(2,Math.min(n,Math.floor(iw/(big?70:100))+1));for(let k=0;k<t;k++)tk.push(Math.round(k*(n-1)/(t-1)))}
+  tk=[...new Set(tk)];
+  tk.forEach((i,k)=>{const lab=(n===24&&labs[0]==='0時'&&i===23)?'24時':labs[i];s+=`<text x="${x(i).toFixed(1)}" y="${H-10}" text-anchor="${k===0?'start':k===tk.length-1?'end':'middle'}" font-size="${fs}" fill="var(--faint)" font-family="Noto Sans JP,sans-serif">${lab}</text>`});
+  const line=a=>a.map((d,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(d.views).toFixed(1)}`).join('');
+  const m=cur.length;
+  if(prev.length)s+=`<path d="${line(prev.slice(0,n))}" fill="none" stroke="var(--prev)" stroke-width="1.5" stroke-dasharray="4 4"/>`;
+  const part=!!o.partial&&m>1,mm=part?m-1:m,main=cur.slice(0,mm);
+  if(mm>1){s+=`<path d="${line(main)}L${x(mm-1).toFixed(1)},${y(0)}L${x(0)},${y(0)}Z" fill="url(#ga${id})"${o.anim?' class="fadein"':''}/>`;
+  s+=`<path d="${line(main)}" fill="none" stroke="url(#gl${id})" stroke-width="${big?3:2.5}" stroke-linejoin="round" pathLength="1"${o.anim?' class="draw"':''}/>`;}
+  if(part)s+=`<path d="M${x(m-2).toFixed(1)},${y(cur[m-2].views).toFixed(1)}L${x(m-1).toFixed(1)},${y(cur[m-1].views).toFixed(1)}" fill="none" stroke="var(--g3)" stroke-width="2" stroke-dasharray="3 4"/><text x="${(x(m-1)-6).toFixed(1)}" y="${(y(cur[m-1].views)-10).toFixed(1)}" text-anchor="end" font-size="${fs}" fill="var(--muted)" font-family="Noto Sans JP,sans-serif">今日（途中）</text>`;
+  const ni=o.nowIdx;
+  if(ni!=null&&ni<n)s+=`<line x1="${x(ni).toFixed(1)}" x2="${x(ni).toFixed(1)}" y1="${pad.t}" y2="${pad.t+ih}" stroke="var(--g2)" stroke-opacity=".6" stroke-width="1"/><text x="${(x(ni)+6).toFixed(1)}" y="${pad.t+12}" font-size="${fs}" fill="var(--g2)" font-family="Noto Sans JP,sans-serif">いま</text>`;
+  if((big&&n<=45)||n<=31)cur.forEach((d,i)=>{if(!d.ev)s+=`<circle cx="${x(i).toFixed(1)}" cy="${y(d.views).toFixed(1)}" r="${n<=8?3.5:2.5}" fill="var(--g2)"/>`});
+  cur.forEach((d,i)=>{if(d.ev)s+=`<circle cx="${x(i).toFixed(1)}" cy="${y(d.views).toFixed(1)}" r="${big?5.5:4.5}" fill="var(--surface)" stroke="var(--g2)" stroke-width="2"/>`});
+  s+=part?`<circle cx="${x(m-1).toFixed(1)}" cy="${y(cur[m-1].views).toFixed(1)}" r="4.5" fill="var(--surface)" stroke="var(--g3)" stroke-width="2"/>`:`<circle cx="${x(m-1).toFixed(1)}" cy="${y(cur[m-1].views).toFixed(1)}" r="4.5" fill="var(--g2)"/>`;
+  s+=`<rect class="sel" x="0" y="${pad.t}" width="0" height="${ih}" fill="var(--g2)" fill-opacity=".18" visibility="hidden"/>`;
+  s+=`<line class="xh" x1="0" x2="0" y1="${pad.t}" y2="${pad.t+ih}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3" visibility="hidden"/>`;
+  s+=`<rect class="hit" x="${pad.l}" y="${pad.t}" width="${iw}" height="${ih}" fill="transparent"${big?' style="touch-action:none;cursor:crosshair"':''}/></svg>`;
+  box.innerHTML=s; box.appendChild(tip);
+  const hit=box.querySelector('.hit'),xh=box.querySelector('.xh'),sel=box.querySelector('.sel');
+  const idxOf=ev=>{const rect=box.getBoundingClientRect();const px=(ev.clientX-rect.left)*(W/rect.width);return Math.max(0,Math.min(n-1,Math.round((px-pad.l)/iw*(n-1))))};
+  let drag=null;
+  function show(ev){const i=idxOf(ev),rect=box.getBoundingClientRect();const d=cur[i],pv=prev[i];
+    xh.setAttribute('x1',x(i));xh.setAttribute('x2',x(i));xh.setAttribute('visibility','visible');
+    const yv=d?d.views:(pv?pv.views:0);
+    tip.innerHTML=d?`${d.tip}　閲覧 <b>${fmt(d.views)}</b>　クリック ${fmt(d.clk)}${pv?`<br>${o.pn||CH.pn} ${fmt(pv.views)}`:''}${d.ev?'<br>● '+d.ev:''}`:`${labs[i]}台　まだこれから${pv?`<br>${o.pn||CH.pn} ${fmt(pv.views)}`:''}`;
+    tip.hidden=false;const tx=x(i)*rect.width/W;tip.style.left=Math.max(90,Math.min(rect.width-90,tx))+'px';tip.style.top=(y(yv)*rect.height/H-10)+'px';
+    if(drag!==null){const a=Math.min(drag,i),b=Math.max(drag,i);sel.setAttribute('x',x(a));sel.setAttribute('width',Math.max(1,x(b)-x(a)));sel.setAttribute('visibility','visible')}}
+  hit.addEventListener('pointermove',show);
+  hit.addEventListener('pointerdown',ev=>{if(big){drag=idxOf(ev);try{hit.setPointerCapture(ev.pointerId)}catch(e){}}show(ev)});
+  hit.addEventListener('pointerup',ev=>{if(!big||drag===null)return;const i=idxOf(ev),a=Math.min(drag,i),b=Math.max(drag,i);drag=null;sel.setAttribute('visibility','hidden');if(b-a>=2&&o.onRange)o.onRange(a,b)});
+  hit.addEventListener('pointerleave',()=>{if(drag===null){tip.hidden=true;xh.setAttribute('visibility','hidden')}});
+}
+function drawZoom(){
+  const r=CH.range,a=r?r[0]:0,b=r?r[1]:CH.labs.length-1;
+  const labs=CH.labs.slice(a,b+1),cur=CH.cur.slice(a,b+1),prev=CH.prev.slice(a,b+1);
+  $('#zrange').textContent=`${labs[0]} – ${labs.at(-1)}（${labs.length}${labs[0].endsWith('時')?'時間':'日間'}）`;
+  $('#zreset').hidden=!r;
+  if(!cur.length){CH.range=null;return drawZoom()}
+  plot($('#zchart'),$('#ztip'),cur,prev,{big:true,id:'z',labs,nowIdx:CH.nowIdx!=null?CH.nowIdx-a:null,partial:CH.partial&&b>=CH.cur.length-1,onRange:(i,j)=>{CH.range=[a+i,a+j];drawZoom()}});
+}
+function openZoom(){CH.range=null;$('#zoom').hidden=false;document.body.style.overflow='hidden';drawZoom();$('#zclose').focus()}
+function closeZoom(){$('#zoom').hidden=true;document.body.style.overflow='';$('#zoombtn').focus()}
+function sum(a,f){return a.reduce((x,d)=>x+f(d),0)}
+
+function erf(x){const g=Math.sign(x);x=Math.abs(x);const t=1/(1+.3275911*x);return g*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x))}
+/* ---------- live ---------- */
+const LV={timer:null,paused:false};
+const R=Math.random;
+function poisson(l){let L=Math.exp(-l),k=0,p=1;do{k++;p*=R()}while(p>L);return k-1}
+function pick(items,w){let t=w.reduce((a,b)=>a+b,0),x=R()*t;for(let i=0;i<items.length;i++){x-=w[i];if(x<=0)return items[i]}return items.at(-1)}
+const pad2=n=>String(n).padStart(2,'0');
+const clock=d=>`${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+function bump(el,text){el.textContent=text;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
+
+function lognorm(med,sig){const u=1-R(),v=R();const z=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);return Math.min(110,Math.max(1,Math.round(med*Math.exp(sig*z))))}
+function startLive(c,days,srcNames,sC,L,FL,linkU,today){
+  clearInterval(LV.timer);
+  const lam=Math.max(.45,c.base/380);
+  Object.assign(LV,{c,srcNames,sC,L,FL,linkU,lam,tick:0,sid:0,
+    surgeCands:c.ev.slice(0,3).map(e=>({src:e[2],label:e[1]})),
+    buckets:Array.from({length:30},()=>poisson(lam*3)),surgeIdx:new Set(),
+    surge:null,nextSurge:14+Math.floor(R()*10),sessions:[],
+    tv:Math.round(today.views),tc:Math.round(sum(today.clicks,q=>q))});
+  $('#surge').hidden=true;
+  const pre=Math.round(lam*16);
+  for(let i=0;i<pre;i++)spawn(null,-Math.floor(R()*40));
+  LV.sessions.sort((a,b)=>a.t0-b.t0);
+  $('#tv').textContent=fmt(LV.tv);$('#tc').textContent=fmt(LV.tc);
+  drawStream();drawFeed();updateNow(false);
+  LV.timer=setInterval(liveTick,1000);
+}
+function stageOf(s,el){return (el>=s.dwell?1:0)+(s.back&&el>=s.dwell+s.away?1:0)+(s.back&&el>=s.dwell+s.away+s.dwell2?1:0)}
+function spawn(forceSrc,t0){
+  const src=forceSrc||pick(LV.srcNames,LV.srcNames.map(s=>LV.sC[s]));
+  const f=LV.FL[src];
+  const s={id:++LV.sid,src,t0,start:new Date(Date.now()+(t0-LV.tick)*1000),rev:R()<f.rev,dwell:lognorm(f.med,.95),link:-1,back:false};
+  if(R()<f.tap*1.1){s.link=pick(LV.L,LV.L.map(l=>l.ctr)).pos-1}
+  if(s.dwell<3&&R()<.8)s.link=-1;
+  if(s.link>=0&&R()<Math.min(.6,LV.linkU[s.link]*f.uf)){s.back=true;s.away=4+Math.floor(R()*12);s.dwell2=lognorm(f.med*.6,.8);s.link2=R()<.55?pick(LV.L,LV.L.map(l=>l.ctr)).pos-1:-1}
+  s.stage=stageOf(s,LV.tick-t0);s.upd=t0+(s.stage?s.dwell:0);
+  LV.sessions.push(s);return s;
+}
+function isOn(s,el){return el<s.dwell||(s.back&&el>=s.dwell+s.away&&el<s.dwell+s.away+s.dwell2)}
+function sessHTML(s){
+  const el=LV.tick-s.t0,on=isOn(s,el);
+  let parts=[],stay=Math.min(el,s.dwell);
+  if(el<s.dwell)parts.push(`<span><span class="pdot"></span>見ています</span>`);
+  else if(s.link<0)parts.push(`<span class="lv">何もタップせず離脱</span>`);
+  else{
+    parts.push(`<span>→ <b>${LV.L[s.link].name}</b></span>`);
+    if(s.back&&el>=s.dwell+s.away){
+      const e2=el-s.dwell-s.away;stay+=Math.min(e2,s.dwell2);
+      parts.push(`<span class="tagb">↩ ${s.away}秒後に戻ってきた</span>`);
+      if(e2<s.dwell2)parts.push(`<span><span class="pdot"></span>見ています</span>`);
+      else if(s.link2>=0)parts.push(`<span>→ <b>${LV.L[s.link2].name}</b></span>`);
+      else parts.push(`<span class="lv">そのまま離脱</span>`);
+    }else if(s.back===false||el<s.dwell+s.away)parts.push(`<span>へ移動</span>`);
+  }
+  return `<li class="sess${on?' on':''}${s.upd===LV.tick&&LV.tick>0?' new':''}"><div class="l1"><time>${clock(s.start)}</time><span class="s">${s.src}</span>${s.rev?'<span class="tagr">再訪</span>':'<span class="tagr">はじめて</span>'}<span class="dw">滞在 ${stay}秒</span></div><div class="l2">${parts.join('')}</div></li>`;
+}
+function feedList(){
+  const by=(a,b)=>b.upd-a.upd||b.id-a.id;
+  const arr=LV.sessions.filter(s=>s.stage===0).sort(by).slice(0,3);
+  const mv=LV.sessions.filter(s=>s.stage>0).sort(by).slice(0,6);
+  return [...arr,...mv].sort(by);
+}
+function drawFeed(){
+  const list=feedList();
+  $('#feed').innerHTML=list.map(sessHTML).join('');
+  LV.lastDrawn=LV.sid;
+}
+function updateNow(anim){
+  const n=LV.sessions.filter(s=>isOn(s,LV.tick-s.t0)).length;
+  const el=$('#nowv');if(el.textContent!==String(n)){anim?bump(el,n):el.textContent=n}
+  $('#tabnow').textContent=n;
+}
+function flashRow(i){const row=document.querySelector(`#links tr[data-i="${i}"]`);if(row){row.classList.add('hit');setTimeout(()=>row.classList.remove('hit'),900)}}
+function drawStream(){
+  const W=Math.max(220,$('#stream').clientWidth||400),H=W<500?130:190,pb=20,pt=8,n=LV.buckets.length;
+  const mx=Math.max(6,...LV.buckets)*1.15,bw=W/n;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true"><defs><linearGradient id="gs" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--g1)"/><stop offset=".7" style="stop-color:var(--g2)"/><stop offset="1" style="stop-color:var(--g3)"/></linearGradient></defs>`;
+  [.5,1].forEach(f=>{const y=(pt+(H-pt-pb)*(1-f)).toFixed(1);s+=`<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)"/>`});
+  LV.buckets.forEach((v,i)=>{const h=(H-pt-pb)*v/mx,last=i===n-1;
+    s+=`<rect x="${(i*bw+1.5).toFixed(1)}" y="${(H-pb-h).toFixed(1)}" width="${Math.max(1,bw-3).toFixed(1)}" height="${Math.max(h,1.5).toFixed(1)}" rx="2" fill="${!last&&LV.surgeIdx.has(i)?'var(--warn)':'url(#gs)'}" fill-opacity="${last?1:.6}"/>`});
+  s+=`<line x1="0" x2="${W}" y1="${H-pb}" y2="${H-pb}" stroke="var(--line)"/>`;
+  s+=`<text x="0" y="${H-5}" font-size="10.5" fill="var(--faint)" font-family="Noto Sans JP,sans-serif">90秒前</text><text x="${W}" y="${H-5}" text-anchor="end" font-size="10.5" fill="var(--faint)" font-family="Noto Sans JP,sans-serif">いま</text></svg>`;
+  $('#stream').innerHTML=s;
+}
+function liveTick(){
+  if(LV.paused||document.hidden)return;
+  LV.tick++;
+  if(!LV.surge&&LV.tick>=LV.nextSurge){const sc=pick(LV.surgeCands,LV.surgeCands.map(()=>1));LV.surge={...sc,end:LV.tick+12};
+    const b=$('#surge');b.innerHTML=`<b>急上昇</b><span>${sc.src}から人が次々に来ています</span>`;b.hidden=false}
+  if(LV.surge&&LV.tick>=LV.surge.end){LV.surge=null;LV.nextSurge=LV.tick+30+Math.floor(R()*25);setTimeout(()=>{if(!LV.surge)$('#surge').hidden=true},6000)}
+  const k=poisson(LV.lam*(LV.surge?4.5:1)*(.7+.6*R()));
+  for(let i=0;i<k;i++)spawn(LV.surge&&R()<.75?LV.surge.src:null,LV.tick);
+  let clicks=0;
+  LV.sessions.forEach(s=>{const st=stageOf(s,LV.tick-s.t0);
+    for(let g=s.stage+1;g<=st;g++){if(g===1&&s.link>=0){clicks++;flashRow(s.link)}if(g===3&&s.link2>=0){clicks++;flashRow(s.link2)}}
+    if(st!==s.stage)s.upd=LV.tick;s.stage=st});
+  const keep=new Set(feedList());
+  LV.sessions=LV.sessions.filter(s=>keep.has(s)||isOn(s,LV.tick-s.t0)||(s.back&&LV.tick-s.t0<s.dwell+s.away));
+  LV.buckets[LV.buckets.length-1]+=k;
+  if(LV.surge)LV.surgeIdx.add(LV.buckets.length-1);
+  if(LV.tick%3===0){LV.buckets.shift();LV.buckets.push(0);LV.surgeIdx=new Set([...LV.surgeIdx].map(i=>i-1).filter(i=>i>=0))}
+  if(k){LV.tv+=k;bump($('#tv'),fmt(LV.tv))}
+  if(clicks){LV.tc+=clicks;bump($('#tc'),fmt(LV.tc))}
+  updateNow(true);drawStream();drawFeed();
+}
+$('#zoombtn').addEventListener('click',openZoom);
+$('#zclose').addEventListener('click',closeZoom);
+$('#zreset').addEventListener('click',()=>{CH.range=null;drawZoom()});
+$('#zoom').addEventListener('click',e=>{if(e.target.id==='zoom')closeZoom()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#zoom').hidden)closeZoom()});
+$('#pause').addEventListener('click',()=>{LV.paused=!LV.paused;$('#pause').textContent=LV.paused?'再開':'一時停止';$('#livebadge').classList.toggle('off',LV.paused)});
+
+$('#persona').addEventListener('change',e=>{state.persona=e.target.value;saveUI();render(true)});
+document.querySelectorAll('.ptab').forEach(b=>b.addEventListener('click',()=>{state.days=+b.dataset.days;saveUI();render(true)}));
+$('#todo').addEventListener('change',e=>{if(e.target.type!=='checkbox')return;const id=decodeURIComponent(e.target.dataset.id);if(e.target.checked)done[id]=Date.now();else delete done[id];try{localStorage.setItem('litinsight-todo',JSON.stringify(done))}catch(err){}render(false)});
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>render(false),150)});
+function showTab(t,redraw){
+  state.tab=t;saveUI();
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
+  document.querySelectorAll('.panel').forEach(p=>p.hidden=p.dataset.panel!==t);
+  if(redraw)render(true);
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab,true)));
+$('#mailbtn').addEventListener('click',()=>{showTab('mail',true);const t=$('.tabs');const y=t.getBoundingClientRect().top+window.scrollY-70;window.scrollTo({top:y,behavior:'smooth'})});
+$('.tabs').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;const t=[...document.querySelectorAll('.tab')];let i=t.findIndex(b=>b.dataset.tab===state.tab);i=(i+(e.key==='ArrowRight'?1:t.length-1))%t.length;t[i].focus();showTab(t[i].dataset.tab,true)});
+/* ---------- mail (demo) ---------- */
+const MAILSEED={
+  illust:[
+    {id:'w1',from:'佐藤 美穂',org:'アオバ出版 Web編集部',email:'sato@aoba-pub.example',subj:'Web連載のご相談（月2本・各4,000字程度）',route:['X','執筆実績・ポートフォリオ','お仕事依頼フォーム'],at:'今日 11:42',status:'new',thread:[{me:0,at:'今日 11:42',body:'カナスギ様\n\nはじめまして。アオバ出版Web編集部の佐藤と申します。\nXで拝見した記事がとても印象に残り、ご連絡しました。\n\n弊社メディアで「働き方と創作」をテーマにした連載を企画しており、月2本（各4,000字程度）でご執筆いただけないかと考えております。\n\n開始時期は11月を想定しています。原稿料などの条件は、改めてご相談させてください。\n\nご検討のほど、よろしくお願いいたします。'}]},
+    {id:'w2',from:'田中 翔',org:'合同会社ミナト 広報',email:'tanaka@minato.example',subj:'採用サイト用インタビュー記事の執筆依頼',route:['検索','寄稿・掲載記事一覧','お仕事依頼フォーム'],at:'昨日 18:05',status:'new',thread:[{me:0,at:'昨日 18:05',body:'カナスギ様\n\n合同会社ミナト広報の田中です。\n採用サイトのリニューアルにあたり、社員インタビュー記事（3本）の取材と執筆をお願いできる方を探しています。\n\n取材はオンラインで各60分、納品は12月上旬を予定しています。\nお見積もりをいただくことは可能でしょうか。'}]},
+    {id:'w3',from:'山本 恵',org:'個人',email:'megumi.y@example.com',subj:'noteの記事を拝見しました。講座での登壇のご相談',route:['note','お仕事依頼フォーム'],at:'9/25',status:'open',thread:[{me:0,at:'9/25 21:14',body:'カナスギ様\n\nnoteの「書く前に考えること」の記事を読んで、ぜひお話を伺いたいと思いました。\n地域の文章講座で、90分ほどお話しいただくことはできますか？\n謝礼は少額で恐縮ですが、3万円を予定しています。'},{me:1,at:'9/26 10:03',body:'山本様\n\nご連絡ありがとうございます。カナスギです。\n講座のお話、ありがたく拝見しました。\n開催日と会場（オンラインか対面か）を教えていただけますか？'},{me:0,at:'9/26 19:40',body:'ありがとうございます！\n11/16（日）の午後、市民会館で対面を予定しています。参加者は20名ほどです。'}]},
+    {id:'w4',from:'木村 亮',org:'ソラ企画',email:'kimura@sora-plan.example',subj:'書籍の構成協力について',route:['直接','お仕事依頼フォーム'],at:'9/22',status:'replied',thread:[{me:0,at:'9/22 14:30',body:'カナスギ様\n\nビジネス書の構成協力（全8章）をお願いできる方を探しています。\n一度お話しできませんでしょうか。'},{me:1,at:'9/22 17:12',body:'木村様\n\nお問い合わせありがとうございます。カナスギです。\n一度オンラインでお打ち合わせできればと思います。\n9/29（月）14時〜、9/30（火）10時〜のいずれかはいかがでしょうか。'}]}
+  ],
+  vtuber:[
+    {id:'v1',from:'石井 大地',org:'ネオン・ゲームス PR',email:'ishii@neon-games.example',subj:'新作ゲームのPR配信のご相談',route:['YouTube','お仕事依頼フォーム'],at:'今日 10:20',status:'new',thread:[{me:0,at:'今日 10:20',body:'星乃ルカ様\n\nネオン・ゲームスの石井です。\n11月発売の新作について、PR配信（2時間×1回）をお願いできないかご相談です。'}]},
+    {id:'v2',from:'森 さくら',org:'グッズ工房もり',email:'mori@goods-mori.example',subj:'アクリルスタンド制作のご提案',route:['X','グッズ通販','お仕事依頼フォーム'],at:'9/26',status:'open',thread:[{me:0,at:'9/26 13:00',body:'星乃ルカ様\n\n誕生日記念のアクリルスタンド制作をご提案させてください。\n最小ロット50個から対応できます。'}]},
+    {id:'v3',from:'高橋 蓮',org:'個人勢VTuber',email:'ren.t@example.com',subj:'コラボ配信のお誘い',route:['TikTok','お仕事依頼フォーム'],at:'9/21',status:'replied',thread:[{me:0,at:'9/21 22:10',body:'ルカさん、はじめまして！高橋蓮です。\nよければ歌枠コラボしませんか？'},{me:1,at:'9/22 12:00',body:'蓮さん、お誘いありがとうございます！ぜひ。日程を相談させてください。'}]}
+  ],
+  handmade:[
+    {id:'h1',from:'小林 綾',org:'セレクトショップ tonari',email:'kobayashi@tonari.example',subj:'店舗での委託販売のご相談',route:['Instagram','新作一覧','お仕事依頼フォーム'],at:'今日 09:15',status:'new',thread:[{me:0,at:'今日 09:15',body:'atelier koto様\n\n吉祥寺のセレクトショップtonariの小林です。\nピアスのシリーズを、店頭で委託販売させていただけないでしょうか。'}]},
+    {id:'h2',from:'松田 理子',org:'月刊てしごと 編集部',email:'matsuda@teshigoto.example',subj:'誌面掲載（冬の贈りもの特集）のお願い',route:['Pinterest','お仕事依頼フォーム'],at:'9/27',status:'new',thread:[{me:0,at:'9/27 16:40',body:'atelier koto様\n\n月刊てしごと編集部の松田です。\n12月号「冬の贈りもの」特集で、作品を1点ご紹介させていただけないでしょうか。'}]},
+    {id:'h3',from:'中川 由衣',org:'個人',email:'yui.n@example.com',subj:'結婚式用イヤリングのオーダー',route:['検索','お仕事依頼フォーム'],at:'9/23',status:'replied',thread:[{me:0,at:'9/23 20:00',body:'はじめまして。来年3月の結婚式で着けるイヤリングをオーダーできますか？'},{me:1,at:'9/24 09:30',body:'中川様\n\nおめでとうございます。オーダーを承っております。ドレスの色味を教えていただけますか？'}]}
+  ]};
+const ARRIVE={
+  illust:{id:'wn',from:'岡田 健',org:'ハルカゼ・マガジン',email:'okada@harukaze.example',subj:'特集記事（5,000字）の執筆依頼',route:['Instagram','お仕事依頼フォーム'],status:'new'},
+  vtuber:{id:'vn',from:'佐々木 ゆう',org:'イベント制作シグナル',email:'sasaki@signal.example',subj:'オンラインイベントへのご出演依頼',route:['X','お仕事依頼フォーム'],status:'new'},
+  handmade:{id:'hn',from:'藤井 花',org:'ギャラリー灯',email:'fujii@akari.example',subj:'冬の展示会へのご出展のお誘い',route:['Instagram','イベント出店情報','お仕事依頼フォーム'],status:'new'}};
+const TPL=[
+  ['お礼と確認',(n,me)=>`${n}様\n\nお問い合わせありがとうございます。${me}です。\nご依頼の内容を拝見しました。進めるにあたって、次の点を教えていただけますか。\n\n・納期\n・分量（文字数・本数など）\n・ご予算\n\nどうぞよろしくお願いいたします。`],
+  ['打ち合わせの日程',(n,me)=>`${n}様\n\nご連絡ありがとうございます。${me}です。\n一度オンラインでお打ち合わせできればと思います。次の日程はいかがでしょうか。\n\n・10/1（水）14時〜\n・10/2（木）10時〜\n\nご都合をお知らせください。`],
+  ['見積もりを送る',(n,me)=>`${n}様\n\n${me}です。ご依頼の内容で、お見積もりをお送りします。\n\n・料金：〇〇円（税別）\n・納期：〇月〇日\n・修正：2回まで\n\nご確認のほど、よろしくお願いいたします。`],
+  ['お断り',(n,me)=>`${n}様\n\nお声がけいただき、ありがとうございます。${me}です。\n大変恐縮ですが、現在スケジュールに余裕がなく、今回はお引き受けが難しい状況です。\nまたの機会がありましたら、ぜひよろしくお願いいたします。`]];
+const MS={};let mailFilter='all',mailSel={},mailStore={};
+try{mailStore=JSON.parse(localStorage.getItem('litinsight-mail')||'{}')}catch(e){}
+function saveMail(){try{const o={};for(const k in MS)o[k]=MS[k].map(m=>({id:m.id,status:m.status,read:m.read,mine:m.thread.filter(t=>t.added)}));localStorage.setItem('litinsight-mail',JSON.stringify({v:1,d:o,arr:mailStore.arr||{}}))}catch(e){}}
+function mailFor(p){
+  if(MS[p])return MS[p];
+  const saved=(mailStore.d||{})[p]||[];
+  const list=JSON.parse(JSON.stringify(MAILSEED[p]||[])).map(m=>({...m,read:m.status!=='new'}));
+  if(mailStore.arr&&mailStore.arr[p]){const a=mailStore.arr[p];list.unshift({...JSON.parse(JSON.stringify(ARRIVE[p])),at:a.at,read:false,thread:[{me:0,at:a.at,body:arrivalBody(p)}]})}
+  saved.forEach(sv=>{const m=list.find(x=>x.id===sv.id);if(!m)return;m.status=sv.status;m.read=sv.read;(sv.mine||[]).forEach(t=>m.thread.push(t))});
+  MS[p]=list;return list;
+}
+function arrivalBody(p){const a=ARRIVE[p],me=P[p].name;return `${me}様\n\n${a.org}の${a.from.split(' ')[0]}と申します。\nプロフィールを拝見し、ご相談したくご連絡しました。詳しい内容は、お打ち合わせでお伝えできればと思います。\n\nご検討のほど、よろしくお願いいたします。`}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STL={new:'新着',open:'対応中',replied:'返信済み'};
+function nowLabel(){const d=new Date();return `今日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
+function renderMail(){
+  const p=state.persona,list=mailFor(p);
+  const unread=list.filter(m=>!m.read).length;
+  $('#tabmail').textContent=unread||'';$('#mailbadge').textContent=unread||'';
+  document.querySelectorAll('.mf button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===mailFilter));
+  const shown=list.filter(m=>mailFilter==='all'||(mailFilter==='unread'&&!m.read)||(mailFilter==='todo'&&m.status!=='replied'));
+  $('#mlist').innerHTML=shown.length?shown.map(m=>{const last=m.thread[m.thread.length-1];return `<li><button type="button" class="mitem${m.read?'':' unread'}" data-id="${m.id}" aria-current="${mailSel[p]===m.id}"><span class="ud"></span><span class="mf1">${esc(m.org)}　${esc(m.from)}</span><span class="mt">${esc(m.at)}</span><span class="ms">${esc(m.subj)}</span><span class="mx"><span class="st ${m.status}">${STL[m.status]}</span><span class="sn">${esc((last.me?'あなた：':'')+last.body.replace(/\n+/g,' ').slice(0,60))}</span></span></button></li>`}).join(''):'<li class="mempty">該当するメールはありません</li>';
+  const m=list.find(x=>x.id===mailSel[p]);
+  if(!m){$('#mview').innerHTML='<p class="mempty">左の一覧からメールを選ぶと、ここに内容と返信欄が出ます</p>';$('#mailgrid').classList.remove('showing');return}
+  const surname=m.from.split(' ')[0];
+  $('#mview').innerHTML=`<div class="mvhead"><button type="button" class="back" id="mback">← 一覧に戻る</button><h3>${esc(m.subj)}</h3><div class="mvfrom"><b>${esc(m.from)}</b>（${esc(m.org)}）　${esc(m.email)}　<span class="st ${m.status}">${STL[m.status]}</span></div><div class="route"><span>届いた経路：</span>${m.route.map((r,i)=>`${i?'<span class="ra">→</span>':''}<span class="rc${i?' l':''}">${esc(r)}</span>`).join('')}</div></div>
+  <div class="thread" id="thread">${m.thread.map(t=>`<div class="bub ${t.me?'me':'in'}"><span class="bm">${t.me?'あなた':esc(surname)}・${esc(t.at)}</span>${esc(t.body)}</div>`).join('')}</div>
+  <div class="composer"><div class="tpls">${TPL.map((t,i)=>`<button type="button" class="tpl" data-t="${i}">${t[0]}</button>`).join('')}</div>
+  <label class="label" for="reply">${esc(surname)}様への返信</label><textarea id="reply" placeholder="ひな形を選ぶか、ここに返信を書きます"></textarea>
+  <div class="crow"><span class="hint">デモのため実際には送信されません</span><button type="button" class="send" id="sendbtn" disabled>返信する</button></div></div>`;
+  $('#mailgrid').classList.add('showing');
+  const th=$('#thread');th.scrollTop=th.scrollHeight;
+}
+function openMail(id){const p=state.persona,m=mailFor(p).find(x=>x.id===id);if(!m)return;mailSel[p]=id;if(!m.read){m.read=true;if(m.status==='new')m.status='open'}saveMail();renderMail();}
+function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3200)}
+$('#mlist').addEventListener('click',e=>{const b=e.target.closest('.mitem');if(b)openMail(b.dataset.id)});
+document.querySelectorAll('.mf button').forEach(b=>b.addEventListener('click',()=>{mailFilter=b.dataset.f;renderMail()}));
+$('#mview').addEventListener('click',e=>{
+  const p=state.persona,m=mailFor(p).find(x=>x.id===mailSel[p]);
+  if(e.target.id==='mback'){mailSel[p]=null;renderMail();return}
+  const tb=e.target.closest('.tpl');
+  if(tb&&m){const ta=$('#reply');ta.value=TPL[+tb.dataset.t][1](m.from.split(' ')[0],P[p].name);$('#sendbtn').disabled=false;ta.focus();return}
+  if(e.target.id==='sendbtn'&&m){const v=$('#reply').value.trim();if(!v)return;m.thread.push({me:1,at:nowLabel(),body:v,added:true});m.status='replied';m.read=true;saveMail();renderMail();toast(`${m.from.split(' ')[0]}様に返信しました（デモ）`)}
+});
+$('#mview').addEventListener('input',e=>{if(e.target.id==='reply')$('#sendbtn').disabled=!e.target.value.trim()});
+setTimeout(function arrive(){
+  const p=state.persona;mailStore.arr=mailStore.arr||{};
+  if(mailStore.arr[p]||!ARRIVE[p])return;
+  const at=nowLabel();mailStore.arr[p]={at};
+  const a=JSON.parse(JSON.stringify(ARRIVE[p]));mailFor(p).unshift({...a,at,read:false,thread:[{me:0,at,body:arrivalBody(p)}]});
+  saveMail();renderMail();toast(`新しいお仕事メールが届きました：${a.org}`);
+},40000);
+
+showTab(state.tab,false);
+render(true);
+})();
+</script>
+</html>
